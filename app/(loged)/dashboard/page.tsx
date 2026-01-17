@@ -1,13 +1,16 @@
+"use client"
 
-import { getUser } from "@/src/lib/auth-server"
+import { authClient } from "@/src/lib/auth-client"
 
 
-export default async function DashboardPage() {
-    const user = await getUser()
+export default function DashboardPage() {
+
+    const { data: activeOrganization } = authClient.useActiveOrganization()
 
     return (
         <div className="p-8">
-            <h1 className="text-2xl font-bold mb-4">Welcome to your Dashboard, {user?.name}!</h1>
+            <h1 className="text-2xl font-bold mb-4">Welcome to your Dashboard !</h1>
+            <p>Active Project: {activeOrganization?.name || "None"}</p>
         </div>  
     )
 }

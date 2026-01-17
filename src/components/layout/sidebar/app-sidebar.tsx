@@ -5,7 +5,6 @@ import {
     SidebarGroup,
     SidebarGroupLabel,
     SidebarGroupContent,
-    SidebarHeader,
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton,
@@ -14,7 +13,6 @@ import {
     Home,
     Settings,
     LogOut,
-    Plus,
     CalendarDays,
     Files,
     MessagesSquare,
@@ -22,9 +20,6 @@ import {
     LinkIcon,
     FilePlusCorner,
     LayersPlus,
-    Globe,
-    Palette,
-    Gauge,
     ChevronsUpDown,
     Sparkles,
     User,
@@ -44,7 +39,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/src/components/ui/shadcn/dropdown-menu"
-import { Button } from "../ui/shadcn/button"
+import { prisma } from "@/src/lib/prisma"
+import HeaderSidebar from "./header-sidebar"
 
 async function handleSignout() {
     'use server'
@@ -58,6 +54,16 @@ async function handleSignout() {
 
 export async function AppSidebar() {
     const user = await getUser()
+
+    const projects = await prisma.organization.findMany({
+        where: {
+            members: {
+                some: {
+                    userId: user?.id
+                }
+            }
+        }
+    })
 
     const nav = [
         {
@@ -112,48 +118,7 @@ export async function AppSidebar() {
     return (
         <Sidebar className="border-none">
             <div className="border-none bg-background w-full flex flex-col h-full">
-                <SidebarHeader>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <div className="p-4 cursor-pointer hover:bg-border/50 rounded-sm flex items-center justify-between bg-border/30 border">
-                                <div className="flex items-center">
-                                    <div className="border bg-accent p-1 flex items-center justify-center rounded-sm mr-2">
-                                        <Globe className="inline-block h-4 w-4" />
-                                    </div>
-                                    <div className="font-medium">Projet actuel</div>
-                                </div>
-                                <ChevronsUpDown className="w-4 h-4 ml-2" />
-                            </div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent side="right" className="mt-2">
-                            <DropdownMenuItem>
-                                <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                    <Globe className="inline-block h-4 w-4" />
-                                </div>
-                                Projet 1
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                    <Palette className="inline-block h-4 w-4" />
-                                </div>
-                                Projet 2
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                    <Gauge className="inline-block h-4 w-4" />
-                                </div>
-                                Projet 3
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                    <Plus className="inline-block h-4 w-4" />
-                                </div>
-                                <p>Nouveau projet</p>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </SidebarHeader>
+                <HeaderSidebar projects={projects} />
 
                 <SidebarContent>
                     <SidebarGroup>

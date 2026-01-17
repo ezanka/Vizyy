@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
+import { organization } from "better-auth/plugins"
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -15,6 +16,9 @@ export const auth = betterAuth({
             clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
         },
     },
+    plugins: [ 
+        organization() 
+    ],
     secret: process.env.BETTER_AUTH_SECRET as string,
     baseUrl: process.env.BETTER_AUTH_URL as string,
 });

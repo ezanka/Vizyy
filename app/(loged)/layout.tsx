@@ -1,6 +1,6 @@
 import { getUser } from "@/src/lib/auth-server";
 import { SidebarProvider } from "@/src/components/ui/shadcn/sidebar"
-import { AppSidebar } from "@/src/components/layout/app-sidebar"
+import { AppSidebar } from "@/src/components/layout/sidebar/app-sidebar"
 import Header from "@/src/components/layout/header";
 
 export default async function Layout({

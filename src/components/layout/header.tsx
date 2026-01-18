@@ -8,7 +8,7 @@ export default function Header() {
                 <div className="flex items-center justify-center h-full rounded-sm border bg-background aspect-square">
                     <SidebarTrigger className="w-8 h-8" />
                 </div>
-                <div className="flex items-center justify-between h-full rounded-sm border text-input aspect-square px-2 gap-2">
+                <div className="flex items-center justify-between h-full rounded-sm border text-muted-foreground aspect-square px-2 gap-2">
                     <Home className="w-5 h-5" />
                     <ChevronRight className="w-3 h-3" />                    
                 </div>

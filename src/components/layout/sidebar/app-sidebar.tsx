@@ -24,7 +24,9 @@ import {
     Sparkles,
     User,
     CreditCard,
-    Bell
+    Bell,
+    Mail,
+    Megaphone
 } from "lucide-react"
 import { getUser } from "@/src/lib/auth-server"
 import { headers } from "next/headers"
@@ -72,9 +74,9 @@ export async function AppSidebar() {
             icon: Home,
         },
         {
-            title: "Timeline",
-            url: `/timeline`,
-            icon: CalendarDays,
+            title: "Updates",
+            url: "/updates",
+            icon: Megaphone,
         },
         {
             title: "Assets",
@@ -84,12 +86,12 @@ export async function AppSidebar() {
         {
             title: "Feedback",
             url: "/feedback",
-            icon: MessagesSquare,
+            icon: Mail,
         },
         {
-            title: "Validations",
-            url: "/validations",
-            icon: ClipboardCheck,
+            title: "Timeline",
+            url: `/timeline`,
+            icon: CalendarDays,
         },
     ]
 

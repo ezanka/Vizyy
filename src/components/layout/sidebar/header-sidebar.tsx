@@ -47,7 +47,7 @@ export default function headerSideBar({ projects }: HeaderSidebarProps) {
                             <div className="border bg-accent p-1 flex items-center justify-center rounded-sm mr-2">
                                 <CurrentIcon className="inline-block h-4 w-4" />
                             </div>
-                            <div className="font-medium">{activeOrganization?.name || <Skeleton className="h-5 w-25 rounded-full" />}</div>
+                            <div className="font-medium">{activeOrganization?.name || <p className="text-sm">Choisir un projet</p>}</div>
                         </div>
                         <ChevronsUpDown className="w-4 h-4 ml-2" />
                     </div>

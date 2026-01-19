@@ -13,7 +13,6 @@ import { Label } from "@/src/components/ui/shadcn/label"
 import { Brush, ClipboardList, Globe, Laptop, Monitor, Palette, Sparkles, Tag, Zap } from "lucide-react"
 import { createProject } from "@/src/actions/new-project-actions"
 import React from "react"
-import { authClient } from "@/src/lib/auth-client"
 import { redirect } from "next/navigation"
 
 export default function NewPage() {
@@ -25,11 +24,7 @@ export default function NewPage() {
         const result = createProject(projectName, selectedLogo);
         const data = await result;
 
-        await authClient.organization.setActive({
-            organizationId: data?.project?.id,
-        });
-
-        redirect(`/dashboard`);
+        redirect(`/project/${data.project?.id}/dashboard`);
     }
 
     return (

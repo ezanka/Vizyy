@@ -6,27 +6,26 @@ import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { redirect } from "next/navigation";
 
-export default async function UpdatesPage() {
+type Params = {
+    projectId: string;
+}
 
+export default async function UpdatesPage({
+    params,
+}: {
+    params: Promise<Params>;
+}) {
+    const { projectId } = await params;
     const user = await getUser();
 
     if (!user) {
         redirect('/auth/signin');
     }
 
-    const activeOrganization = await prisma.session.findFirst({
-        where: {
-            userId: user.id,
-        },
-        select: {
-            activeOrganizationId: true,
-        },
-    })
-
     const updates = await prisma.update.findMany({
         where: {
             organization: {
-                id: activeOrganization?.activeOrganizationId || undefined,
+                id: projectId,
             },
         },
         orderBy: {

@@ -4,6 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
+import { MemberRole } from "../generated/prisma/enums";
 
 function generateSlug(length: number = 15): string {
     const letters = 'abcdefghijklmnopqrstuvwxyz';
@@ -39,12 +40,12 @@ export async function createProject(name: string, logo: string) {
             id: randomUUID(),
             userId: user.id,
             organizationId: newProject.id,
-            role: "owner",
+            role: MemberRole.MAKER,
             createdAt: new Date(),
         },
     });
 
-    revalidatePath(`/dashboard`);
+    revalidatePath(`/project/${newProject.id}/dashboard`);
 
     return { success: true, project: newProject };
 }

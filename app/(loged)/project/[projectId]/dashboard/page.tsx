@@ -1,22 +1,34 @@
-"use client"
-
 import { Button } from "@/src/components/ui/shadcn/button"
 import { Card, CardContent, CardHeader } from "@/src/components/ui/shadcn/card"
 import { Progress } from "@/src/components/ui/shadcn/progress"
-import { authClient } from "@/src/lib/auth-client"
+import { prisma } from "@/src/lib/prisma"
 import { ArrowRight, ClockAlert, Gauge, MailWarning } from "lucide-react"
 import Link from "next/link"
 
-export default function DashboardPage() {
+type Params = {
+    projectId: string;
+}
 
-    const { data: activeOrganization } = authClient.useActiveOrganization()
+export default async function DashboardPage({
+    params,
+}: {
+    params: Promise<Params>;
+}) {
+
+    const { projectId } = await params;
+
+    const projectInfo = await prisma.organization.findUnique({
+        where: {
+            id: projectId,
+        }
+    });
 
     return (
         <div className="p-8">
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h1 className="text-2xl font-bold">Welcome to your Dashboard !</h1>
-                    <p className="text-sm text-muted-foreground">"Prêt à faire avancer {activeOrganization?.name || "None"} ?"</p>
+                    <p className="text-sm text-muted-foreground">"Prêt à faire avancer {projectInfo?.name || "None"} ?"</p>
                 </div>
                 <Button>New Update</Button>
             </div>

@@ -42,6 +42,7 @@ import {
 } from "@/src/components/ui/shadcn/dropdown-menu"
 import { prisma } from "@/src/lib/prisma"
 import HeaderSidebar from "./header-sidebar"
+import { MemberRole } from "@/src/generated/prisma/enums"
 
 async function handleSignout() {
     'use server'
@@ -53,7 +54,7 @@ async function handleSignout() {
     redirect("/auth/signin")
 }
 
-export async function AppSidebar() {
+export async function AppSidebar({projectId}: {projectId: string}) {
     const user = await getUser()
 
     const projects = await prisma.organization.findMany({
@@ -66,25 +67,37 @@ export async function AppSidebar() {
         }
     })
 
+    const userRole = await prisma.member.findFirst({
+        where: {
+            userId: user?.id,
+            organization: {
+                id: projectId || undefined
+            }
+
+        }
+    });
+
+    const isClient = userRole?.role === MemberRole.CLIENT;
+
     const nav = [
         {
             title: "Dashboard",
-            url: "/dashboard",
+            url: `/dashboard`,
             icon: Home,
         },
         {
             title: "Updates",
-            url: "/updates",
+            url: `/updates`,
             icon: Megaphone,
         },
         {
             title: "Assets",
-            url: "/assets",
+            url: `/assets`,
             icon: Files,
         },
         {
             title: "Feedback",
-            url: "/feedback",
+            url: `/feedback`,
             icon: Mail,
         },
         {
@@ -97,7 +110,7 @@ export async function AppSidebar() {
     const fastNav = [
         {
             title: "Ajouter asset",
-            url: "/assets/new",
+            url: `/assets/new`,
             icon: FilePlusCorner,
         },
         {
@@ -107,15 +120,15 @@ export async function AppSidebar() {
         },
         {
             title: "Partager",
-            url: "/share",
+            url: `/share`,
             icon: LinkIcon,
         }
     ]
 
-        const gestionNav = [
+    const gestionNav = [
         {
             title: "Clients",
-            url: "/clients",
+            url: `/clients`,
             icon: Users,
         },
         {
@@ -132,7 +145,7 @@ export async function AppSidebar() {
     return (
         <Sidebar className="border-none">
             <div className="border-none bg-background w-full flex flex-col h-full">
-                <HeaderSidebar projects={projects} />
+                <HeaderSidebar projects={projects} projectId={projectId} />
 
                 <SidebarContent>
                     <SidebarGroup>
@@ -142,7 +155,7 @@ export async function AppSidebar() {
                                 {nav.map((item) => (
                                     <SidebarMenuItem key={item.title}>
                                         <SidebarMenuButton asChild className="hover:bg-card">
-                                            <Link href={item.url}>
+                                            <Link href={`/project/${projectId}/${item.url}`}>
                                                 <item.icon />
                                                 <span>{item.title}</span>
                                             </Link>
@@ -153,23 +166,25 @@ export async function AppSidebar() {
                         </SidebarGroupContent>
                     </SidebarGroup>
 
-                    <SidebarGroup>
-                        <SidebarGroupLabel>Gestions du projet</SidebarGroupLabel>
-                        <SidebarGroupContent>
-                            <SidebarMenu>
-                                {gestionNav.map((item) => (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton asChild className="hover:bg-card">
-                                            <Link href={item.url}>
-                                                <item.icon />
-                                                <span>{item.title}</span>
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                            </SidebarMenu>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
+                    {!isClient && (
+                        <SidebarGroup>
+                            <SidebarGroupLabel>Gestions du projet</SidebarGroupLabel>
+                            <SidebarGroupContent>
+                                <SidebarMenu>
+                                    {gestionNav.map((item) => (
+                                        <SidebarMenuItem key={item.title}>
+                                            <SidebarMenuButton asChild className="hover:bg-card">
+                                                <Link href={`/project/${projectId}/${item.url}`}>
+                                                    <item.icon />
+                                                    <span>{item.title}</span>
+                                                </Link>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    ))}
+                                </SidebarMenu>
+                            </SidebarGroupContent>
+                        </SidebarGroup>
+                    )}
 
                     <SidebarGroup>
                         <SidebarGroupLabel>Actions rapides</SidebarGroupLabel>
@@ -178,7 +193,7 @@ export async function AppSidebar() {
                                 {fastNav.map((item) => (
                                     <SidebarMenuItem key={item.title}>
                                         <SidebarMenuButton asChild className="hover:bg-card">
-                                            <Link href={item.url}>
+                                            <Link href={`/project/${projectId}/${item.url}`}>
                                                 <item.icon />
                                                 <span>{item.title}</span>
                                             </Link>

@@ -1,7 +1,6 @@
 import { getUser } from "@/src/lib/auth-server";
 import { SidebarProvider } from "@/src/components/ui/shadcn/sidebar"
-import { AppSidebar } from "@/src/components/layout/sidebar/app-sidebar"
-import Header from "@/src/components/layout/header";
+import { redirect } from "next/navigation";
 
 export default async function Layout({
     children,
@@ -10,15 +9,13 @@ export default async function Layout({
 }>) {
     const user = await getUser();
 
+    if (!user) {
+        redirect("/auth/signin");
+    }
+
     return (
         <SidebarProvider>
-            <AppSidebar />
-            <div className="h-screen p-2 w-full">
-                <div className="h-full w-full bg-card rounded-lg border border-border overflow-auto px-8">
-                    <Header />
-                    {children}
-                </div>
-            </div>
+            {children}
         </SidebarProvider>
     )
 }

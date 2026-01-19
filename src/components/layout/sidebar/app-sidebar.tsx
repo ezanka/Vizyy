@@ -15,8 +15,6 @@ import {
     LogOut,
     CalendarDays,
     Files,
-    MessagesSquare,
-    ClipboardCheck,
     LinkIcon,
     FilePlusCorner,
     LayersPlus,
@@ -26,7 +24,8 @@ import {
     CreditCard,
     Bell,
     Mail,
-    Megaphone
+    Megaphone,
+    Users
 } from "lucide-react"
 import { getUser } from "@/src/lib/auth-server"
 import { headers } from "next/headers"
@@ -113,6 +112,19 @@ export async function AppSidebar() {
         }
     ]
 
+        const gestionNav = [
+        {
+            title: "Clients",
+            url: "/clients",
+            icon: Users,
+        },
+        {
+            title: "Liens",
+            url: `/links`,
+            icon: LinkIcon,
+        }
+    ]
+
     const userInitial = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'
     const userName = user?.name || 'Utilisateur'
     const userEmail = user?.email || 'user@codizy.com'
@@ -128,6 +140,24 @@ export async function AppSidebar() {
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {nav.map((item) => (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton asChild className="hover:bg-card">
+                                            <Link href={item.url}>
+                                                <item.icon />
+                                                <span>{item.title}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Gestions du projet</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {gestionNav.map((item) => (
                                     <SidebarMenuItem key={item.title}>
                                         <SidebarMenuButton asChild className="hover:bg-card">
                                             <Link href={item.url}>

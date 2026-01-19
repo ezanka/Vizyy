@@ -1,6 +1,6 @@
 "use client"
 
-import { Globe, Palette, Gauge, Sparkles, Plus, ChevronsUpDown } from "lucide-react"
+import { Globe, Palette, Sparkles, Laptop, Monitor, Zap, Brush, Tag, ClipboardList, Plus, ChevronsUpDown } from "lucide-react"
 import {
     SidebarHeader,
 } from "@/src/components/ui/shadcn/sidebar"
@@ -12,7 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/src/components/ui/shadcn/dropdown-menu"
 import { authClient } from "@/src/lib/auth-client";
-import { Skeleton } from "../../ui/shadcn/skeleton";
+import Link from "next/link";
 
 interface HeaderSidebarProps {
     projects: { id: string; name: string; logo: string | null }[];
@@ -29,9 +29,14 @@ export default function headerSideBar({ projects }: HeaderSidebarProps) {
 
     const iconMap: { [key: string]: any } = {
         Globe,
+        Laptop,
+        Monitor,
+        Zap,
         Palette,
-        Gauge,
         Sparkles,
+        Brush,
+        Tag,
+        ClipboardList,
     };
 
     const { data: activeOrganization } = authClient.useActiveOrganization()
@@ -66,11 +71,13 @@ export default function headerSideBar({ projects }: HeaderSidebarProps) {
                         )
                     })}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                            <Plus className="inline-block h-4 w-4" />
-                        </div>
-                        <p>Nouveau projet</p>
+                    <DropdownMenuItem asChild>
+                        <Link href="/new">
+                            <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
+                                <Plus className="inline-block h-4 w-4" />
+                            </div>
+                            <p>Nouveau projet</p>
+                        </Link>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

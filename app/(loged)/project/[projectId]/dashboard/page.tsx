@@ -20,7 +20,11 @@ export default async function DashboardPage({
     const projectInfo = await prisma.organization.findUnique({
         where: {
             id: projectId,
-        }
+        },
+        include: {
+            members: true,
+            updates: true,
+        },
     });
 
     return (
@@ -39,8 +43,8 @@ export default async function DashboardPage({
                         <MailWarning className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <p className="text-lg font-bold">12</p>
-                        <p className="text-xs text-muted-foreground">Posté le 18/01/2026</p>
+                        <p className="text-lg font-bold">{projectInfo?.updates.length || 0}</p>
+                        <p className="text-xs text-muted-foreground">Dernière update posté le {projectInfo?.updates[0]?.createdAt.toLocaleDateString() || "N/A"}</p>
                     </CardContent>
                 </Card>
                 <Card className="border bg-background rounded-md flex flex-col justify-between">
@@ -59,8 +63,8 @@ export default async function DashboardPage({
                         <ClockAlert className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <p className="text-lg font-bold">25/01/2025</p>
-                        <p className="text-xs text-muted-foreground">7 jours restants</p>
+                        <p className="text-lg font-bold">{projectInfo?.deadline?.toLocaleDateString() || "Aucune deadline"}</p>
+                        <p className="text-xs text-muted-foreground">Commencé le {projectInfo?.createdAt.toLocaleDateString() || "N/A"}</p>
                     </CardContent>
                 </Card>
                 <Card className="border bg-background rounded-md flex flex-col justify-between">

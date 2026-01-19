@@ -67,6 +67,8 @@ export async function AppSidebar({projectId}: {projectId: string}) {
         }
     })
 
+    console.log(projects);
+
     const userRole = await prisma.member.findFirst({
         where: {
             userId: user?.id,

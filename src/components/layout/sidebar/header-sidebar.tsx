@@ -1,4 +1,4 @@
-import { Globe, Palette, Sparkles, Laptop, Monitor, Zap, Brush, Tag, ClipboardList, Plus, ChevronsUpDown } from "lucide-react"
+import { Globe, Palette, Sparkles, Laptop, Monitor, Zap, Brush, Tag, ClipboardList, Plus, ChevronsUpDown, List } from "lucide-react"
 import {
     SidebarHeader,
 } from "@/src/components/ui/shadcn/sidebar"
@@ -68,6 +68,15 @@ export default async function headerSideBar({ projects, projectId }: HeaderSideb
                             </DropdownMenuItem>
                         )
                     })}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                        <Link href="/projects">
+                            <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
+                                <List className="inline-block h-4 w-4" />
+                            </div>
+                            <p>Tous les projets</p>
+                        </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                         <Link href="/project/new">

@@ -7,18 +7,22 @@ import { ChevronRight, Home } from "lucide-react"
 import { SidebarTrigger } from "@/src/components/ui/shadcn/sidebar"
 
 const routeLabels: Record<string, string> = {
-    "/": "Accueil",
-    "/new": "Nouveau projet",
-    "/updates": "Updates",
-    "/updates/new": "Nouvelle",
-    "/settings": "Paramètres",
-    "/profile": "Profil",
+    dashboard: "Tableau de bord",
+    new: "Nouveau projet",
+    updates: "Updates",
+    settings: "Paramètres",
+    profile: "Profil",
 }
 
 export default function Header() {
     const pathname = usePathname()
 
-    if (pathname === "/dashboard") {
+    const pathSegments = pathname.split('/').filter(segment => segment !== '')
+    
+    const projectIndex = pathSegments.findIndex(segment => segment === 'project')
+    const projectId = projectIndex !== -1 ? pathSegments[projectIndex + 1] : null
+
+    if (projectId && pathname === `/project/${projectId}/dashboard`) {
         return (
             <div className="flex items-center justify-between px-4 py-2 h-12">
                 <div className="flex items-center h-full gap-4">
@@ -33,15 +37,23 @@ export default function Header() {
         )
     }
 
-    const pathSegments = pathname.split('/').filter(segment => segment !== '')
+    const relevantSegments = projectId 
+        ? pathSegments.slice(projectIndex + 2) 
+        : pathSegments
 
-    const breadcrumbs = pathSegments.map((_, index) => {
-        const path = `/${pathSegments.slice(0, index + 1).join('/')}`
-        const label = routeLabels[path] || pathSegments[index].charAt(0).toUpperCase() + pathSegments[index].slice(1)
-        const isLast = index === pathSegments.length - 1
+    const breadcrumbs = relevantSegments.map((segment, index) => {
+        const relativePath = relevantSegments.slice(0, index + 1).join('/')
+        const fullPath = projectId 
+            ? `/project/${projectId}/${relativePath}`
+            : `/${relativePath}`
+        
+        const label = routeLabels[segment] || segment.charAt(0).toUpperCase() + segment.slice(1)
+        const isLast = index === relevantSegments.length - 1
 
-        return { path, label, isLast }
+        return { path: fullPath, label, isLast }
     })
+
+    const homeUrl = projectId ? `/project/${projectId}/dashboard` : "/projects"
 
     return (
         <div className="flex items-center justify-between px-4 py-2 h-12">
@@ -50,12 +62,15 @@ export default function Header() {
                     <SidebarTrigger className="w-8 h-8" />
                 </div>
                 <div className="flex items-center h-full gap-2 border">
-                    <Link href="/" className="flex items-center justify-between h-full rounded-sm text-muted-foreground hover:text-foreground transition-colors aspect-square px-2 gap-2">
+                    <Link 
+                        href={homeUrl} 
+                        className="flex items-center justify-between h-full rounded-sm text-muted-foreground hover:text-foreground transition-colors aspect-square px-2 gap-2"
+                    >
                         <Home className="w-5 h-5" />
                     </Link>
                     <ChevronRight className="w-3 h-3" />
 
-                    {breadcrumbs.map((crumb, index) => (
+                    {breadcrumbs.map((crumb) => (
                         <div key={crumb.path} className="flex items-center h-full gap-2">
                             {crumb.isLast ? (
                                 <div className="flex items-center h-full rounded-sm px-3">

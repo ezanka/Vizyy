@@ -14,7 +14,7 @@ export default function Layout({
     return (
         <div className="w-full h-full flex items-center justify-center">
             <Button variant="outline" className="absolute top-2 left-2 flex items-center gap-2" onClick={() => router.back()}>
-                <Undo2 /> Retour au dashboard
+                <Undo2 /> Retour
             </Button>
             {children}
         </div>

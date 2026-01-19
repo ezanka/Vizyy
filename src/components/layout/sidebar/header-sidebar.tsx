@@ -13,18 +13,20 @@ import {
 } from "@/src/components/ui/shadcn/dropdown-menu"
 import { authClient } from "@/src/lib/auth-client";
 import Link from "next/link";
+import { changeActiveProject } from "@/src/actions/change-active-project";
+import { useRouter } from "next/navigation";
 
 interface HeaderSidebarProps {
     projects: { id: string; name: string; logo: string | null }[];
 }
 
 export default function headerSideBar({ projects }: HeaderSidebarProps) {
+    const router = useRouter();
+    const { data: activeOrganization } = authClient.useActiveOrganization()
 
-    async function handleProjectSwitch(projectId: string) {
-
-        await authClient.organization.setActive({
-            organizationId: projectId,
-        });
+    const handleProjectChange = async (projectId: string) => {
+        await changeActiveProject(projectId);
+        router.refresh();
     }
 
     const iconMap: { [key: string]: any } = {
@@ -38,8 +40,6 @@ export default function headerSideBar({ projects }: HeaderSidebarProps) {
         Tag,
         ClipboardList,
     };
-
-    const { data: activeOrganization } = authClient.useActiveOrganization()
 
     const CurrentIcon = activeOrganization?.logo && iconMap[activeOrganization.logo] ? iconMap[activeOrganization.logo] : Globe;
 
@@ -62,7 +62,7 @@ export default function headerSideBar({ projects }: HeaderSidebarProps) {
                         const LogoIcon = project.logo && iconMap[project.logo] ? iconMap[project.logo] : Globe;
 
                         return (
-                            <DropdownMenuItem key={project.id} onClick={() => handleProjectSwitch(project.id)}>
+                            <DropdownMenuItem key={project.id} onClick={() => handleProjectChange(project.id)}>
                                 <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
                                     <LogoIcon className="inline-block h-4 w-4" />
                                 </div>

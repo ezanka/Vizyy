@@ -58,7 +58,7 @@ export default function Header() {
                     {breadcrumbs.map((crumb, index) => (
                         <div key={crumb.path} className="flex items-center h-full gap-2">
                             {crumb.isLast ? (
-                                <div className="flex items-center h-full rounded-sm bg-background px-3">
+                                <div className="flex items-center h-full rounded-sm px-3">
                                     <span className="text-sm font-medium">
                                         {crumb.label}
                                     </span>

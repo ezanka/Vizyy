@@ -21,6 +21,8 @@ model User {
     members     Member[]
     invitations Invitation[]
 
+    updatesValidated Update[] @relation("validatedUpdates")
+
     @@unique([email])
     @@map("user")
 }
@@ -86,6 +88,7 @@ model Organization {
 
     members     Member[]
     invitations Invitation[]
+    updates     Update[]
 
     @@unique([slug])
     @@map("organization")
@@ -120,4 +123,37 @@ model Invitation {
     @@index([organizationId])
     @@index([email])
     @@map("invitation")
+}
+
+enum UpdateStatus {
+    DRAFT
+    PUBLISHED
+    ARCHIVED
+}
+
+enum UpdateType {
+    GENERAL
+    FEATURE
+    BUGFIX
+}
+
+model Update {
+    id            String    @id
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    title          String
+    content        String
+    status         UpdateStatus @default(DRAFT)
+    type           UpdateType   @default(GENERAL)
+
+    valid          Boolean   @default(false)
+    validatedById  String?
+    validatedBy    User?     @relation("validatedUpdates", fields: [validatedById], references: [id], onDelete: SetNull)
+    validatedAt    DateTime?
+
+    createdAt      DateTime  @default(now())
+
+    @@index([organizationId])
+    @@map("update")
 }

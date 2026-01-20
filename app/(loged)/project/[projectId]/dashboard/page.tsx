@@ -1,6 +1,7 @@
 import { Button } from "@/src/components/ui/shadcn/button"
 import { Card, CardContent, CardHeader } from "@/src/components/ui/shadcn/card"
 import { Progress } from "@/src/components/ui/shadcn/progress"
+import { MemberRole } from "@/src/generated/prisma/enums"
 import { prisma } from "@/src/lib/prisma"
 import { ArrowRight, ClockAlert, Gauge, MailWarning } from "lucide-react"
 import Link from "next/link"
@@ -81,31 +82,34 @@ export default async function DashboardPage({
             <div className="mb-4">
                 <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold mb-2">Clients</h3>
-                    <Link href="/clients" className="flex items-center gap-2 hover:underline">Tous <ArrowRight className="w-4 h-4" /></Link>
+                    <Link href={`/project/${projectId}/clients`} className="flex items-center gap-2 hover:underline">Tous <ArrowRight className="w-4 h-4" /></Link>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                    <Card className="border rounded-md py-2">
-                        <CardContent className="px-2 flex items-center gap-4">
-                            <div className="h-10 aspect-square rounded-full bg-amber-900 flex items-center justify-center">JD</div>
-                            <div className="flex flex-col">
-                                <p className="text-sm font-medium">John Doe</p>
-                                <p className="text-xs text-muted-foreground">
-                                    Ensitech, Cergy
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border rounded-md py-2">
-                        <CardContent className="px-2 flex items-center gap-4">
-                            <div className="h-10 aspect-square rounded-full bg-amber-900 flex items-center justify-center">JD</div>
-                            <div className="flex flex-col">
-                                <p className="text-sm font-medium">John Doe</p>
-                                <p className="text-xs text-muted-foreground">
-                                    Ensitech, Cergy
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {
+                        projectInfo?.members.map(async (member) => {
+                            if (member.role !== MemberRole.CLIENT) return null;
+
+                            const memberInfo = await prisma.user.findUnique({
+                                where: {
+                                    id: member.userId,
+                                },
+                            });
+
+                            return (
+                                <Card key={member.id} className="border rounded-md py-2">
+                                    <CardContent className="px-2 flex items-center gap-4">
+                                        <div className="h-10 aspect-square rounded-full bg-amber-900 flex items-center justify-center">{memberInfo?.name.split(" ").map(n => n[0]).join("")}</div>
+                                        <div className="flex flex-col">
+                                            <p className="text-sm font-medium">{memberInfo?.name}</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {memberInfo?.company}
+                                            </p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )
+                        })
+                    }
                 </div>
             </div>
             <div>

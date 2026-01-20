@@ -1,3 +1,5 @@
+
+
 "use server";
 
 import { prisma } from "@/src/lib/prisma";
@@ -5,7 +7,7 @@ import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { MemberRole } from "../generated/prisma/enums";
 
-export async function removeClient(email: string, projectId: string) {
+export async function generateInvitationLink(projectId: string) {
     const user = await getUser();
 
     if (!user) {
@@ -21,19 +23,23 @@ export async function removeClient(email: string, projectId: string) {
     });
 
     if (!authorized) {
-        return { error: "Vous n'êtes pas autorisé à supprimer des clients de ce projet" };
+        return { error: "Vous n'êtes pas autorisé à ajouter des clients à ce projet" };
     }
 
-    await prisma.member.deleteMany({
-        where: {
+    const invitationId = crypto.randomUUID();
+
+    const invitationLink = await prisma.invitationLink.create({
+        data: {
+            id: invitationId,
+            role: MemberRole.CLIENT,
             organizationId: projectId,
-            user: {
-                email: email,
-            },
+            link: `${process.env.NEXT_PUBLIC_APP_URL}/project/${projectId}/invitation/${invitationId}`,
+            inviterId: user.id,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         }
     });
 
     revalidatePath(`/project/${projectId}/clients`);
 
-    return { success: true };
+    return { success: true, invitationLink };
 }

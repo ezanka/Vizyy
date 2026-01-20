@@ -13,10 +13,12 @@ export default function Layout({
 
     return (
         <div className="w-full h-full flex items-center justify-center">
-            <Button variant="outline" className="absolute top-2 left-2 flex items-center gap-2" onClick={() => router.back()}>
+            <Button variant="outline" className="absolute top-2 left-2 flex items-center gap-2" onClick={() => router.push("/projects")}>
                 <Undo2 /> Retour
             </Button>
-            {children}
+            <div className="flex h-[80vh] items-center justify-center p-4">
+                {children}
+            </div>
         </div>
     )
 }

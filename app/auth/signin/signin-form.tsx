@@ -14,6 +14,9 @@ import { Input } from "@/src/components/ui/shadcn/input"
 import { authClient } from "@/src/lib/auth-client"
 import Link from "next/link"
 import { Github } from "lucide-react"
+import React from "react"
+import { useRouter } from "next/navigation"
+import { Spinner } from "@/src/components/ui/shadcn/spinner"
 
 const signInWithGitHub = async () => {
     await authClient.signIn.social({
@@ -23,13 +26,37 @@ const signInWithGitHub = async () => {
 
 export function SignInForm({
     className,
+    callbackUrl,
     ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { callbackUrl?: string }) {
+    const [email, setEmail] = React.useState<string>("");
+    const [password, setPassword] = React.useState<string>("");
+    const [isLoading, setIsLoading] = React.useState(false);
+    const router = useRouter();
+
+    async function handleSignIn(e: React.FormEvent) {
+        e.preventDefault();
+        setIsLoading(true);
+
+        try {
+            await authClient.signIn.email({
+                email,
+                password,
+            });
+
+            router.push(callbackUrl || "/projects");
+        } catch (error) {
+            console.error("Erreur de connexion:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card className="overflow-hidden p-0 rounded-xl">
                 <CardContent>
-                    <form className="p-6 md:p-8">
+                    <form className="p-6 md:p-8" onSubmit={handleSignIn}>
                         <FieldGroup>
                             <div className="flex flex-col items-center gap-2 text-center">
                                 <h1 className="text-2xl font-bold">Se connecter</h1>
@@ -43,6 +70,8 @@ export function SignInForm({
                                     id="email"
                                     type="email"
                                     placeholder="m@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
                             </Field>
@@ -56,10 +85,12 @@ export function SignInForm({
                                         Mot de passe oublié ?
                                     </Link>
                                 </div>
-                                <Input id="password" type="password" required />
+                                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                             </Field>
                             <Field>
-                                <Button type="submit">Se connecter</Button>
+                                <Button type="submit" disabled={isLoading}>
+                                    {isLoading ? <><Spinner /> Connexion en cours</> : "Se connecter"}
+                                </Button>
                             </Field>
                             <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                                 Ou continuer avec

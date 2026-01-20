@@ -54,7 +54,7 @@ async function handleSignout() {
     redirect("/auth/signin")
 }
 
-export async function AppSidebar({projectId}: {projectId: string}) {
+export async function AppSidebar({ projectId }: { projectId: string }) {
     const user = await getUser()
 
     const projects = await prisma.organization.findMany({
@@ -167,42 +167,44 @@ export async function AppSidebar({projectId}: {projectId: string}) {
                     </SidebarGroup>
 
                     {!isClient && (
-                        <SidebarGroup>
-                            <SidebarGroupLabel>Gestions du projet</SidebarGroupLabel>
-                            <SidebarGroupContent>
-                                <SidebarMenu>
-                                    {gestionNav.map((item) => (
-                                        <SidebarMenuItem key={item.title}>
-                                            <SidebarMenuButton asChild className="hover:bg-card">
-                                                <Link href={`/project/${projectId}/${item.url}`}>
-                                                    <item.icon />
-                                                    <span>{item.title}</span>
-                                                </Link>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
-                                    ))}
-                                </SidebarMenu>
-                            </SidebarGroupContent>
-                        </SidebarGroup>
-                    )}
+                        <>
+                            <SidebarGroup>
+                                <SidebarGroupLabel>Gestions du projet</SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    <SidebarMenu>
+                                        {gestionNav.map((item) => (
+                                            <SidebarMenuItem key={item.title}>
+                                                <SidebarMenuButton asChild className="hover:bg-card">
+                                                    <Link href={`/project/${projectId}/${item.url}`}>
+                                                        <item.icon />
+                                                        <span>{item.title}</span>
+                                                    </Link>
+                                                </SidebarMenuButton>
+                                            </SidebarMenuItem>
+                                        ))}
+                                    </SidebarMenu>
+                                </SidebarGroupContent>
+                            </SidebarGroup>
 
-                    <SidebarGroup>
-                        <SidebarGroupLabel>Actions rapides</SidebarGroupLabel>
-                        <SidebarGroupContent>
-                            <SidebarMenu>
-                                {fastNav.map((item) => (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton asChild className="hover:bg-card">
-                                            <Link href={`/project/${projectId}/${item.url}`}>
-                                                <item.icon />
-                                                <span>{item.title}</span>
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                            </SidebarMenu>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
+                            <SidebarGroup>
+                                <SidebarGroupLabel>Actions rapides</SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    <SidebarMenu>
+                                        {fastNav.map((item) => (
+                                            <SidebarMenuItem key={item.title}>
+                                                <SidebarMenuButton asChild className="hover:bg-card">
+                                                    <Link href={`/project/${projectId}/${item.url}`}>
+                                                        <item.icon />
+                                                        <span>{item.title}</span>
+                                                    </Link>
+                                                </SidebarMenuButton>
+                                            </SidebarMenuItem>
+                                        ))}
+                                    </SidebarMenu>
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                        </>
+                    )}
                 </SidebarContent>
 
                 <SidebarFooter className="p-4 mt-auto">

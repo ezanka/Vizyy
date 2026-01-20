@@ -1,27 +1,18 @@
-import { SignInForm } from "./signin-form"
+import { SignUpForm } from "./signup-form"
 import { getUser } from "@/src/lib/auth-server"
 import { redirect } from "next/navigation"
 
-type SearchParams = {
-    callbackUrl?: string;
-}
-
-export default async function SignInPage({
-    searchParams,
-}: {
-    searchParams: Promise<SearchParams>;
-}) {
+export default async function SignUpPage() {
     const user = await getUser()
-    const { callbackUrl } = await searchParams;
 
     if (user) {
-        redirect(callbackUrl || "/projects")
+        redirect("/projects")
     }
 
     return (
         <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm md:max-w-lg">
-                <SignInForm callbackUrl={callbackUrl} />
+                <SignUpForm />
             </div>
         </div>
     )

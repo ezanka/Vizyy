@@ -13,6 +13,7 @@ model User {
     email         String
     emailVerified Boolean   @default(false)
     image         String?
+    company       String?
     createdAt     DateTime  @default(now())
     updatedAt     DateTime  @updatedAt
     sessions      Session[]
@@ -20,6 +21,8 @@ model User {
 
     members     Member[]
     invitations Invitation[]
+    inviterInvitationLinks InvitationLink[] @relation("inviterInvitationLinks")
+    joinerInvitationLinks   InvitationLink[] @relation("joinerInvitationLinks")
 
     updatesValidated Update[] @relation("validatedUpdates")
 
@@ -88,6 +91,7 @@ model Organization {
 
     members     Member[]
     invitations Invitation[]
+    invitationLinks InvitationLink[]
     updates     Update[]
 
     @@unique([slug])
@@ -108,9 +112,16 @@ model Member {
     role           MemberRole   @default(CLIENT)
     createdAt      DateTime
 
+    @@unique([userId, organizationId])
     @@index([organizationId])
     @@index([userId])
     @@map("member")
+}
+
+enum InvitationStatus {
+    PENDING
+    ACCEPTED
+    EXPIRED
 }
 
 model Invitation {
@@ -119,7 +130,7 @@ model Invitation {
     organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
     email          String
     role           MemberRole   @default(CLIENT)
-    status         String       @default("pending")
+    status         InvitationStatus       @default(PENDING)
     expiresAt      DateTime
     createdAt      DateTime     @default(now())
     inviterId      String
@@ -128,6 +139,28 @@ model Invitation {
     @@index([organizationId])
     @@index([email])
     @@map("invitation")
+}
+
+model InvitationLink {
+    id             String       @id
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    role           MemberRole   @default(CLIENT)
+    link           String       @unique
+
+    inviterId      String
+    user           User         @relation("inviterInvitationLinks", fields: [inviterId], references: [id], onDelete: Cascade)
+
+    joinerId      String?
+    joiner        User?        @relation("joinerInvitationLinks", fields: [joinerId], references: [id], onDelete: SetNull)
+
+    status         InvitationStatus       @default(PENDING)
+
+    expiresAt      DateTime
+    createdAt      DateTime     @default(now())
+
+    @@index([organizationId])
+    @@map("invitation_link")
 }
 
 enum UpdateStatus {

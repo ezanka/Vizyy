@@ -1,5 +1,4 @@
-import RemoveClientButton from "@/src/components/button/remove-client-button";
-import { Button } from "@/src/components/ui/shadcn/button";
+import { ClientTable } from "@/src/components/table/client-table";
 import { MemberRole } from "@/src/generated/prisma/enums";
 import { getUser } from "@/src/lib/auth-server";
 import { prisma } from "@/src/lib/prisma"
@@ -16,6 +15,15 @@ export default async function ClientsPage({
     const { projectId } = await params;
     const user = await getUser();
 
+    const isMaker = await prisma.member.findUnique({
+        where: {
+            userId_organizationId: {
+                userId: user?.id!,
+                organizationId: projectId,
+            }
+        }
+    }).then(member => member?.role === MemberRole.MAKER);
+
     const clients = await prisma.member.findMany({
         where: {
             organizationId: projectId,
@@ -26,24 +34,11 @@ export default async function ClientsPage({
         }
     });
 
-    async function removeClient(clientId: string) {
-        await prisma.member.deleteMany({
-            where: {
-                organizationId: projectId,
-                userId: clientId,
-            }
-        });
-    }
-
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Clients</h1>
             <p>Contenu de la page des clients.</p>
-            <ul>
-                {clients.map(client => (
-                    <li key={client.id}>{client.user.name} <RemoveClientButton clientId={client.user.id} projectId={projectId} /></li>
-                ))}
-            </ul>
+            <ClientTable clients={clients.map(client => client.user)} isMaker={isMaker} projectId={projectId} />
         </div>
     )
 }

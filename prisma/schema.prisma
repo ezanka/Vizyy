@@ -93,6 +93,7 @@ model Organization {
     invitations Invitation[]
     invitationLinks InvitationLink[]
     updates     Update[]
+    timelines   Timeline[]
 
     @@unique([slug])
     @@map("organization")
@@ -190,8 +191,26 @@ model Update {
     validatedBy    User?     @relation("validatedUpdates", fields: [validatedById], references: [id], onDelete: SetNull)
     validatedAt    DateTime?
 
+    timeline       Timeline[]
+
     createdAt      DateTime  @default(now())
 
     @@index([organizationId])
     @@map("update")
+}
+
+model Timeline {
+    id        String   @id
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    name      String
+
+    startDate DateTime
+    endDate   DateTime
+
+    updateId String?
+    update   Update?  @relation(fields: [updateId], references: [id], onDelete: SetNull)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime? @updatedAt
 }

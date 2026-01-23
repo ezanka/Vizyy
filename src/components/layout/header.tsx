@@ -61,7 +61,7 @@ export default function Header() {
                 <div className="flex items-center justify-center h-full rounded-sm border bg-background aspect-square">
                     <SidebarTrigger className="w-8 h-8" />
                 </div>
-                <div className="flex items-center h-full gap-2 border">
+                <div className="flex items-center h-full gap-2 border rounded-sm">
                     <Link 
                         href={homeUrl} 
                         className="flex items-center justify-between h-full rounded-sm text-muted-foreground hover:text-foreground transition-colors aspect-square px-2 gap-2"

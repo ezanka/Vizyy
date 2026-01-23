@@ -31,8 +31,6 @@ export async function deleteInvitation(invitationId: string, projectId: string) 
         }
     });
 
-    console.log("Revalidating path /project/" + projectId + "/links");
-
     revalidatePath(`/project/${projectId}/links`);
 
     return { success: true };

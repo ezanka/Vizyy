@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/src/components/ui/shadcn/button";
-import { redirect } from "next/navigation";
 import { deleteInvitation } from "@/src/actions/delete-invitation-action";
 
 export default function DeleteInvitationButton({ invitationId, projectId, isAccepted }: { invitationId: string, projectId: string, isAccepted: boolean }) {

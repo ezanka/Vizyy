@@ -3,22 +3,24 @@
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 
-import { ChevronRight, Home } from "lucide-react"
+import { ChevronRight, Home, Plus } from "lucide-react"
 import { SidebarTrigger } from "@/src/components/ui/shadcn/sidebar"
+import { Button } from "../ui/shadcn/button"
 
 const routeLabels: Record<string, string> = {
     dashboard: "Tableau de bord",
-    new: "Nouveau projet",
+    new: "Nouveau",
     updates: "Updates",
     settings: "Paramètres",
     profile: "Profil",
+    timeline: "Timeline",
 }
 
 export default function Header() {
     const pathname = usePathname()
 
     const pathSegments = pathname.split('/').filter(segment => segment !== '')
-    
+
     const projectIndex = pathSegments.findIndex(segment => segment === 'project')
     const projectId = projectIndex !== -1 ? pathSegments[projectIndex + 1] : null
 
@@ -37,16 +39,16 @@ export default function Header() {
         )
     }
 
-    const relevantSegments = projectId 
-        ? pathSegments.slice(projectIndex + 2) 
+    const relevantSegments = projectId
+        ? pathSegments.slice(projectIndex + 2)
         : pathSegments
 
     const breadcrumbs = relevantSegments.map((segment, index) => {
         const relativePath = relevantSegments.slice(0, index + 1).join('/')
-        const fullPath = projectId 
+        const fullPath = projectId
             ? `/project/${projectId}/${relativePath}`
             : `/${relativePath}`
-        
+
         const label = routeLabels[segment] || segment.charAt(0).toUpperCase() + segment.slice(1)
         const isLast = index === relevantSegments.length - 1
 
@@ -62,8 +64,8 @@ export default function Header() {
                     <SidebarTrigger className="w-8 h-8" />
                 </div>
                 <div className="flex items-center h-full gap-2 border rounded-sm">
-                    <Link 
-                        href={homeUrl} 
+                    <Link
+                        href={homeUrl}
                         className="flex items-center justify-between h-full rounded-sm text-muted-foreground hover:text-foreground transition-colors aspect-square px-2 gap-2"
                     >
                         <Home className="w-5 h-5" />
@@ -82,7 +84,7 @@ export default function Header() {
                                 <>
                                     <Link
                                         href={crumb.path}
-                                        className="flex items-center justify-between h-full rounded-sm bg-background px-2 gap-2"
+                                        className="flex items-center justify-between h-full rounded-sm  px-2 gap-2"
                                     >
                                         <span className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                                             {crumb.label}
@@ -95,6 +97,6 @@ export default function Header() {
                     ))}
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

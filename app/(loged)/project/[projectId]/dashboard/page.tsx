@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/src/components/ui/shadcn/card"
 import { Progress } from "@/src/components/ui/shadcn/progress"
 import { MemberRole } from "@/src/generated/prisma/enums"
 import { prisma } from "@/src/lib/prisma"
-import { ArrowRight, ClockAlert, Gauge, MailWarning } from "lucide-react"
+import { ArrowRight, ClockAlert, Gauge, MailWarning, Plus } from "lucide-react"
 import Link from "next/link"
 
 type Params = {
@@ -35,7 +35,7 @@ export default async function DashboardPage({
                     <h1 className="text-2xl font-bold">Welcome to your Dashboard !</h1>
                     <p className="text-sm text-muted-foreground">"Prêt à faire avancer {projectInfo?.name || "None"} ?"</p>
                 </div>
-                <Button>New Update</Button>
+                <Button><Plus /> Nouvelle update</Button>
             </div>
             <div className="grid grid-cols-4 gap-4 mb-4">
                 <Card className="border bg-background rounded-md flex flex-col justify-between">

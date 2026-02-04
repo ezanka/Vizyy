@@ -25,6 +25,8 @@ model User {
     joinerInvitationLinks   InvitationLink[] @relation("joinerInvitationLinks")
 
     updatesValidated Update[] @relation("validatedUpdates")
+    updatesAuthored  Update[] @relation("authorUpdates")
+    updatesUpdated  Update[] @relation("updaterUpdates")
 
     @@unique([email])
     @@map("user")
@@ -88,6 +90,7 @@ model Organization {
     createdAt   DateTime
     metadata    String?
     deadline    DateTime?
+    progress    Int       @default(0)
 
     members     Member[]
     invitations Invitation[]
@@ -165,15 +168,19 @@ model InvitationLink {
 }
 
 enum UpdateStatus {
+    IN_PROGRESS
+    PENDING
+    DONE
+    BLOCKED
     DRAFT
-    PUBLISHED
-    ARCHIVED
 }
 
 enum UpdateType {
-    GENERAL
     FEATURE
+    DESIGN
+    DEPLOY
     BUGFIX
+    OTHER
 }
 
 model Update {
@@ -184,16 +191,26 @@ model Update {
     title          String
     content        String
     status         UpdateStatus @default(DRAFT)
-    type           UpdateType   @default(GENERAL)
-
+    type           UpdateType   @default(FEATURE)
+    needsValidation Boolean   @default(true)
+    previewLink    String?
+    timeSpent      Int?
+    
     valid          Boolean   @default(false)
     validatedById  String?
     validatedBy    User?     @relation("validatedUpdates", fields: [validatedById], references: [id], onDelete: SetNull)
     validatedAt    DateTime?
 
+    authorId      String
+    author        User      @relation("authorUpdates", fields: [authorId], references: [id], onDelete: Cascade)
+
+    updaterId    String?
+    updater      User?     @relation("updaterUpdates", fields: [updaterId], references: [id], onDelete: SetNull)
+
     timeline       Timeline[]
 
     createdAt      DateTime  @default(now())
+    updatedAt      DateTime? 
 
     @@index([organizationId])
     @@map("update")

@@ -2,14 +2,14 @@ import { Button } from "@/src/components/ui/shadcn/button";
 import { Badge } from "@/src/components/ui/shadcn/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/src/components/ui/shadcn/card";
 import { Avatar, AvatarFallback } from "@/src/components/ui/shadcn/avatar";
-import { 
-    Calendar, 
-    CalendarCog, 
-    User, 
-    Plus, 
-    CheckCircle2, 
+import {
+    Calendar,
+    CalendarCog,
+    User,
+    Plus,
+    CheckCircle2,
     Clock,
-    ChevronRight 
+    ChevronRight
 } from "lucide-react";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
@@ -109,8 +109,8 @@ export default async function UpdatesPage({
                     const validatorEmail = update.organization.members?.find(m => m.userId === update.validatedById)?.user?.email;
 
                     return (
-                        <Card 
-                            className="overflow-hidden hover:shadow-md transition-shadow" 
+                        <Card
+                            className="overflow-hidden hover:shadow-md transition-shadow"
                             key={update.id}
                         >
                             <CardHeader className="pb-3">
@@ -126,7 +126,7 @@ export default async function UpdatesPage({
                                                     Validé
                                                 </Badge>
                                             ) : (
-                                                <Badge variant="outline" className="gap-1 shrink-0">
+                                                <Badge variant="outline" className="gap-1 shrink-0 bg-amber-600 hover:bg-amber-700">
                                                     <Clock className="h-3 w-3" />
                                                     En attente
                                                 </Badge>
@@ -137,7 +137,7 @@ export default async function UpdatesPage({
                                             <div className="flex items-center gap-1.5">
                                                 <Calendar className="h-3.5 w-3.5" />
                                                 <span>
-                                                    {format(new Date(update.createdAt), "d MMM yyyy", { locale: fr })} 
+                                                    {format(new Date(update.createdAt), "d MMM yyyy", { locale: fr })}
                                                     {" à "}
                                                     {format(new Date(update.createdAt), "HH:mm", { locale: fr })}
                                                 </span>
@@ -158,6 +158,8 @@ export default async function UpdatesPage({
                                                         <span>
                                                             Modifié le {format(new Date(update.updatedAt), "d MMM", { locale: fr })}
                                                             {update.updaterId && updaterName !== authorName && ` par ${updaterName}`}
+                                                            {" à "}
+                                                            {format(new Date(update.updatedAt), "HH:mm", { locale: fr })}
                                                         </span>
                                                     </div>
                                                 </>
@@ -180,7 +182,7 @@ export default async function UpdatesPage({
                                         {update.content}
                                     </p>
                                     {update.content.length > 150 && (
-                                        <Link 
+                                        <Link
                                             href={`/project/${projectId}/updates/${update.id}`}
                                             className="text-xs text-primary hover:underline mt-1.5 inline-block"
                                         >
@@ -203,6 +205,8 @@ export default async function UpdatesPage({
                                                     </Avatar>
                                                     <span>
                                                         Validé par <span className="font-medium text-foreground">{validatorName}</span>
+                                                        {" à "}
+                                                        {update.validatedAt ? format(new Date(update.validatedAt), "d MMM yyyy 'à' HH:mm", { locale: fr }) : "date inconnue"}
                                                     </span>
                                                 </div>
                                             </TooltipTrigger>
@@ -225,10 +229,10 @@ export default async function UpdatesPage({
                                             En attente de validation
                                         </span>
                                         {isClient && (
-                                            <ValidUpdateButton 
+                                            <ValidUpdateButton
                                                 condition={true}
-                                                updateId={update.id} 
-                                                projectId={projectId} 
+                                                updateId={update.id}
+                                                projectId={projectId}
                                             />
                                         )}
                                     </div>

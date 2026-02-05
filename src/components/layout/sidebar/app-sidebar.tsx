@@ -23,9 +23,9 @@ import {
     User,
     CreditCard,
     Bell,
-    Mail,
     Megaphone,
-    Users
+    Users,
+    MessageCircleMore
 } from "lucide-react"
 import { getUser } from "@/src/lib/auth-server"
 import { headers } from "next/headers"
@@ -98,7 +98,7 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
         {
             title: "Feedback",
             url: `/feedback`,
-            icon: Mail,
+            icon: MessageCircleMore,
         },
         {
             title: "Timeline",

@@ -10,18 +10,29 @@ import {
 } from "@/src/components/ui/shadcn/card"
 import { Input } from "@/src/components/ui/shadcn/input"
 import { Label } from "@/src/components/ui/shadcn/label"
-import { Brush, ClipboardList, Globe, Laptop, Monitor, Palette, Sparkles, Tag, Zap } from "lucide-react"
+import { Brush, ChevronDownIcon, ClipboardList, Globe, Laptop, Monitor, Palette, Sparkles, Tag, Zap } from "lucide-react"
 import { createProject } from "@/src/actions/new-project-actions"
 import React from "react"
 import { redirect } from "next/navigation"
+import { Field, FieldGroup, FieldLabel } from "@/src/components/ui/shadcn/field"
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/shadcn/popover"
+import { format } from "date-fns/format"
+import { fr } from "date-fns/locale"
+import { Calendar } from "@/src/components/ui/shadcn/calendar"
+import { Slider } from "@/src/components/ui/shadcn/slider"
 
 export default function NewPage() {
 
     const [projectName, setProjectName] = React.useState<string>("")
     const [selectedLogo, setSelectedLogo] = React.useState<string>("Globe");
 
+    const [open, setOpen] = React.useState(false)
+    const [deadline, setDeadline] = React.useState<Date | undefined>(undefined)
+
+    const [progress, setProgress] = React.useState<number>(0)
+
     async function handleCreateProject() {
-        const result = createProject(projectName, selectedLogo);
+        const result = createProject(projectName, selectedLogo, deadline, progress);
         const data = await result;
 
         redirect(`/project/${data.project?.id}/dashboard`);
@@ -73,6 +84,44 @@ export default function NewPage() {
                         </Button>
                     </div>
                 </div>
+
+                <FieldGroup className="mx-auto w-full flex-row">
+                    <Field>
+                        <FieldLabel htmlFor="date-picker-optional">Deadline</FieldLabel>
+                        <Popover open={open} onOpenChange={setOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    id="date-picker-optional"
+                                    className="w-32 justify-between font-normal"
+                                >
+                                    {deadline ? format(deadline, "PPPP", { locale: fr }) : "Sélectionner la date"}
+                                    <ChevronDownIcon />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                <Calendar
+                                    mode="single"
+                                    selected={deadline}
+                                    captionLayout="dropdown"
+                                    defaultMonth={deadline}
+                                    onSelect={(date) => {
+                                        setDeadline(date)
+                                        setOpen(false)
+                                    }}
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </Field>
+                </FieldGroup>
+
+                <Field>
+                    <FieldLabel htmlFor="progress">Progression</FieldLabel>
+                    <div className="flex items-center justify-between">
+                        <Slider id="progress" defaultValue={[progress]} onValueChange={(value) => setProgress(value[0])} max={100} />
+                        <span className="ml-4 w-12 text-right text-sm">{progress}%</span>
+                    </div>
+                </Field>
 
                 <Button onClick={handleCreateProject} className="w-full">
                     Créer

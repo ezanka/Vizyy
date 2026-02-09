@@ -18,7 +18,7 @@ function generateSlug(length: number = 15): string {
 }
 
 
-export async function createProject(name: string, logo: string) {
+export async function createProject(name: string, logo: string, deadline: Date | undefined, progress: number) {
     const user = await getUser();
 
     if (!user) {
@@ -31,6 +31,8 @@ export async function createProject(name: string, logo: string) {
             name: name,
             slug: generateSlug(),
             logo: logo,
+            deadline: deadline,
+            progress: progress,
             createdAt: new Date(),
         },
     });

@@ -22,12 +22,14 @@ export default function Feedback({
     projectId,
     updates,
     feedbacks,
+    allFeedbacks,
     selectedUpdateId,
     user,
 }: {
     projectId: string;
     updates: Update[];
     feedbacks: FeedbackWithUser[];
+    allFeedbacks: { updateId: string }[];
     selectedUpdateId?: string;
     user: User;
 }) {
@@ -49,16 +51,22 @@ export default function Feedback({
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                {updates.map((update) => (
-                                    <SelectItem key={update.id} value={update.id} className="flex items-center">
-                                        {update.title}
-                                        {feedbacks.some((f) => f.updateId === update.id) && (
-                                            <div className="inline-flex items-center text-xs font-medium border px-2 py-1 rounded-md bg-accent text-white ml-2">
-                                                {feedbacks.filter((f) => f.updateId === update.id).length}
+                                {updates.map((update) => {
+                                    const count = allFeedbacks.filter((f) => f.updateId === update.id).length;
+
+                                    return (
+                                        <SelectItem key={update.id} value={update.id}>
+                                            <div className="flex items-center gap-2">
+                                                {update.title}
+                                                {count > 0 && (
+                                                    <span className="inline-flex items-center text-xs font-medium border px-2 py-0.5 rounded-md bg-accent text-white">
+                                                        {count}
+                                                    </span>
+                                                )}
                                             </div>
-                                        )}
-                                    </SelectItem>
-                                ))}
+                                        </SelectItem>
+                                    );
+                                })}
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -113,7 +121,7 @@ export default function Feedback({
                 </div>
             </div>
             <div className="flex items-center justify-between gap-2">
-                <Input disabled={!selectedUpdateId} placeholder={!selectedUpdateId ? "Sélectionnez un update" : "Entrez votre feedback"} className="bg-accent" value={feedback} onChange={(e) => setFeedback(e.target.value)} />
+                <Input disabled={!selectedUpdateId} placeholder={!selectedUpdateId ? "Sélectionnez un update" : "Entrez votre feedback"} className="bg-background" value={feedback} onChange={(e) => setFeedback(e.target.value)} />
                 <CreateFeedbackButton projectId={projectId} feedback={feedback} updateId={selectedUpdateId} onSend={() => setFeedback("")} />
             </div>
         </>

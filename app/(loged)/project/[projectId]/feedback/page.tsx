@@ -1,15 +1,9 @@
-
 import { prisma } from "@/src/lib/prisma";
 import Feedback from "@/src/components/feedback";
 import { getUser } from "@/src/lib/auth-server";
 
-type Params = {
-    projectId: string;
-}
-
-type SearchParams = {
-    updateId?: string;
-}
+type Params = { projectId: string; }
+type SearchParams = { updateId?: string; }
 
 export default async function FeedbackPage({
     params,
@@ -23,34 +17,40 @@ export default async function FeedbackPage({
     const user = await getUser();
 
     if (!user) {
-        return <div className="flex flex-col gap-4 my-4 justify-between flex-1">
-            <p>Vous devez être connecté pour voir les feedbacks.</p>
-        </div>
+        return (
+            <div className="flex flex-col gap-4 my-4 justify-between flex-1">
+                <p>Vous devez être connecté pour voir les feedbacks.</p>
+            </div>
+        );
     }
 
-    const updates = await prisma.update.findMany({
-        where: {
-            organizationId: projectId,
-        },
-    });
-
-    const feedbacks = updateId
-        ? await prisma.feedback.findMany({
-            where: {
-                updateId: updateId,
-            },
-            include: {
-                user: true,
-            },
-            orderBy: {
-                createdAt: "asc",
-            },
-        })
-        : [];
+    const [updates, allFeedbacks, feedbacks] = await Promise.all([
+        prisma.update.findMany({
+            where: { organizationId: projectId },
+        }),
+        prisma.feedback.findMany({
+            where: { update: { organizationId: projectId } },
+            select: { updateId: true },
+        }),
+        updateId
+            ? prisma.feedback.findMany({
+                where: { updateId },
+                include: { user: true },
+                orderBy: { createdAt: "asc" },
+            })
+            : Promise.resolve([]),
+    ]);
 
     return (
         <div className="flex flex-col gap-4 my-4 justify-between flex-1">
-            <Feedback projectId={projectId} updates={updates} feedbacks={feedbacks} selectedUpdateId={updateId} user={user} />
+            <Feedback
+                projectId={projectId}
+                updates={updates}
+                feedbacks={feedbacks}
+                allFeedbacks={allFeedbacks}
+                selectedUpdateId={updateId}
+                user={user}
+            />
         </div>
-    )
+    );
 }

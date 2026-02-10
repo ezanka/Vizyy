@@ -35,7 +35,6 @@ import {
 } from "@/src/components/ui/shadcn/table"
 import { Invitation } from "@/src/generated/prisma/client"
 import { InvitationStatus } from "@/src/generated/prisma/enums"
-import RemoveMakerButton from "../button/remove-maker-button"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import DeleteInvitationButton from "../button/delete-invitation-button"

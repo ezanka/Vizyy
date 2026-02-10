@@ -49,12 +49,11 @@ import {
 } from "@/src/components/ui/shadcn/dialog"
 import { Label } from "@/src/components/ui/shadcn/label"
 import InviteMakerButton from "../button/invite-maker-button"
-import { generateInvitationLink } from "@/src/actions/generate-invitation-link-actions";
 import RemoveMakerButton from "../button/remove-maker-button"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 
-export function TeamTable({ makers, projectId }: { makers?: User[], projectId: string }) {
+export function TeamTable({ makers, projectId, ownerId }: { makers?: User[], projectId: string, ownerId: string }) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
@@ -122,6 +121,7 @@ export function TeamTable({ makers, projectId }: { makers?: User[], projectId: s
             enableHiding: false,
             cell: ({ row }) => {
                 const id = row.original.id;
+                const isOwner = row.original.id === ownerId;
 
                 return (
                     <DropdownMenu>
@@ -134,7 +134,7 @@ export function TeamTable({ makers, projectId }: { makers?: User[], projectId: s
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild><RemoveMakerButton userId={id} projectId={projectId}  /></DropdownMenuItem>
+                            <DropdownMenuItem asChild><RemoveMakerButton userId={id} projectId={projectId} isOwner={isOwner} /></DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )

@@ -56,7 +56,7 @@ export default async function Layout({
         <>
             <AppSidebar projectId={projectId} />
             <div className="h-screen p-2 w-full">
-                <div className="h-full w-full bg-card rounded-lg border border-border overflow-auto px-8">
+                <div className="h-full w-full bg-card rounded-lg border border-border overflow-auto px-8 flex flex-col">
                     <Header />
                     {children}
                 </div>

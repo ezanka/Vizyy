@@ -27,6 +27,8 @@ model User {
     updatesValidated Update[] @relation("validatedUpdates")
     updatesAuthored  Update[] @relation("authorUpdates")
     updatesUpdated  Update[] @relation("updaterUpdates")
+    
+    feedback      Feedback[]
 
     @@unique([email])
     @@map("user")
@@ -209,6 +211,8 @@ model Update {
 
     timeline       Timeline[]
 
+    feedback      Feedback[]
+
     createdAt      DateTime  @default(now())
     updatedAt      DateTime? 
 
@@ -228,6 +232,17 @@ model Timeline {
     updateId String?
     update   Update?  @relation(fields: [updateId], references: [id], onDelete: SetNull)
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime? @updatedAt
+}
+
+model Feedback {
+    id        String   @id
+    updateId  String
+    update    Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    content   String
     createdAt DateTime @default(now())
     updatedAt DateTime? @updatedAt
 }

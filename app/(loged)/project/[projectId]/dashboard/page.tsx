@@ -31,7 +31,7 @@ export default async function DashboardPage({
     });
 
     return (
-        <div className="p-8">
+        <div className="flex flex-col gap-4 my-4">
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h1 className="text-2xl font-bold">Welcome to your Dashboard !</h1>

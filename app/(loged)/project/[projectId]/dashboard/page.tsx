@@ -1,7 +1,7 @@
 import { Button } from "@/src/components/ui/shadcn/button"
 import { Card, CardContent, CardHeader } from "@/src/components/ui/shadcn/card"
 import { Progress } from "@/src/components/ui/shadcn/progress"
-import { MemberRole, UpdateType } from "@/src/generated/prisma/enums"
+import { MemberRole, UpdateStatus, UpdateType } from "@/src/generated/prisma/enums"
 import { prisma } from "@/src/lib/prisma"
 import { ArrowRight, BugOff, ClockAlert, Flag, Gauge, HardDriveDownload, ListPlus, MailWarning, MessageCircleWarning, Paintbrush, Plus } from "lucide-react"
 import Link from "next/link"
@@ -46,8 +46,8 @@ export default async function DashboardPage({
                         <MailWarning className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <p className="text-lg font-bold">{projectInfo?.updates.length || 0}</p>
-                        <p className="text-xs text-muted-foreground">Dernière update posté le {projectInfo?.updates[0] ? format(new Date(projectInfo.updates[0].createdAt), "P", { locale: fr }) : "N/A"}</p>
+                        <p className="text-lg font-bold">{projectInfo?.updates.filter((f) => f.status !== UpdateStatus.DRAFT).length || 0}</p>
+                        <p className="text-xs text-muted-foreground">Dernière update posté le {projectInfo?.updates.filter((f) => f.status !== UpdateStatus.DRAFT)[0] ? format(new Date(projectInfo.updates.filter((f) => f.status !== UpdateStatus.DRAFT)[0].createdAt), "P", { locale: fr }) : "N/A"}</p>
                     </CardContent>
                 </Card>
                 <Card className="border bg-background rounded-md flex flex-col justify-between">
@@ -124,6 +124,10 @@ export default async function DashboardPage({
                         projectInfo?.updates.slice(0, 3).map((update) => {
 
                             const author = projectInfo.members.find(m => m.userId === update.authorId);
+
+                            if (update.status === UpdateStatus.DRAFT) {
+                                return null;
+                            }
 
                             return (
                                 <Card className="border rounded-md min-w-75" key={update.id}>

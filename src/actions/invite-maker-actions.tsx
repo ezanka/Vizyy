@@ -5,7 +5,7 @@ import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { MemberRole } from "../generated/prisma/enums";
 
-export async function inviteClient(email: string, projectId: string) {
+export async function inviteMaker(email: string, projectId: string) {
     const user = await getUser();
 
     if (!user) {
@@ -21,7 +21,7 @@ export async function inviteClient(email: string, projectId: string) {
     });
 
     if (!authorized) {
-        return { error: "Vous n'êtes pas autorisé à ajouter des clients à ce projet" };
+        return { error: "Vous n'êtes pas autorisé à ajouter des créateurs à ce projet" };
     }
 
     const userToAdd = await prisma.user.findUnique({
@@ -60,14 +60,14 @@ export async function inviteClient(email: string, projectId: string) {
         data: {
             id: crypto.randomUUID(),
             email: email,
-            role: MemberRole.CLIENT,
+            role: MemberRole.MAKER,
             organizationId: projectId,
             inviterId: user.id,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         }
     });
 
-    revalidatePath(`/project/${projectId}/clients`);
+    revalidatePath(`/project/${projectId}/team`);
 
     return { success: true };
 }

@@ -13,7 +13,7 @@ import {
     type SortingState,
     type VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MailPlus, MoreHorizontal, Plus, Users } from "lucide-react"
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
 
 import { Button } from "@/src/components/ui/shadcn/button"
 import { Checkbox } from "@/src/components/ui/shadcn/checkbox"
@@ -48,11 +48,13 @@ import {
     DialogTrigger,
 } from "@/src/components/ui/shadcn/dialog"
 import { Label } from "@/src/components/ui/shadcn/label"
-import InviteClientButton from "../button/invite-client-button"
-import RemoveClientButton from "../button/remove-client-button"
+import InviteMakerButton from "../button/invite-maker-button"
 import { generateInvitationLink } from "@/src/actions/generate-invitation-link-actions";
+import RemoveMakerButton from "../button/remove-maker-button"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
 
-export function ClientTable({ clients, isMaker, projectId }: { clients?: User[], isMaker?: boolean, projectId: string }) {
+export function TeamTable({ makers, projectId }: { makers?: User[], projectId: string }) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
@@ -62,16 +64,7 @@ export function ClientTable({ clients, isMaker, projectId }: { clients?: User[],
     const [rowSelection, setRowSelection] = React.useState({})
     const [email, setEmail] = React.useState<string>("");
     const [openDialog, setOpenDialog] = React.useState<boolean>(false);
-    const [openInviteDialog, setOpenInviteDialog] = React.useState<boolean>(false);
-    const [invitationLink, setInvitationLink] = React.useState<string | null>(null);
-    
-    async function createInvitationLink() {
-        const result = await generateInvitationLink(projectId);
-        if (result.success) {
-            setInvitationLink(result.invitationLink.link);
-            setOpenInviteDialog(true);
-        }
-    }
+
     const columns: ColumnDef<User>[] = [
         {
             id: "select",
@@ -118,17 +111,17 @@ export function ClientTable({ clients, isMaker, projectId }: { clients?: User[],
             cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
         },
         {
-            accessorKey: "company",
-            header: () => <div>Entreprise</div>,
+            accessorKey: "createdAt",
+            header: () => <div>Ajouté le </div>,
             cell: ({ row }) => (
-                <div className="capitalize">{row.getValue("company")}</div>
+                <div className="capitalize">{format(new Date(row.getValue("createdAt")), "Pp", { locale: fr })}</div>
             ),
         },
         {
             id: "actions",
             enableHiding: false,
             cell: ({ row }) => {
-                const email = row.original.email;
+                const id = row.original.id;
 
                 return (
                     <DropdownMenu>
@@ -141,7 +134,7 @@ export function ClientTable({ clients, isMaker, projectId }: { clients?: User[],
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild><RemoveClientButton email={email} projectId={projectId} /></DropdownMenuItem>
+                            <DropdownMenuItem asChild><RemoveMakerButton userId={id} projectId={projectId}  /></DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -150,7 +143,7 @@ export function ClientTable({ clients, isMaker, projectId }: { clients?: User[],
     ]
 
     const table = useReactTable({
-        data: clients ?? [],
+        data: makers ?? [],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -206,77 +199,35 @@ export function ClientTable({ clients, isMaker, projectId }: { clients?: User[],
                                 })}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button>
-                                <Plus /> Inviter un client
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {isMaker && (
-                                <>
-                                    <DropdownMenuItem asChild>
-                                        <Dialog open={openInviteDialog} onOpenChange={setOpenInviteDialog}>
-                                            <DialogTrigger asChild className="w-full flex justify-start">
-                                                <Button variant="ghost" onClick={() => { createInvitationLink(); setOpenInviteDialog(true); }}><MailPlus /> Lien d'invitation</Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-106">
-                                                <form>
-                                                    <DialogHeader>
-                                                        <DialogTitle>Lien d'invitation</DialogTitle>
-                                                        <DialogDescription>
-                                                            Des que le client clique sur ce lien, il sera ajouté à votre projet.
-                                                        </DialogDescription>
-                                                    </DialogHeader>
-                                                    <div className="grid gap-4 mb-4">
-                                                        <div className="grid gap-3">
-                                                            <Label htmlFor="link">Lien</Label>
-                                                            <Input id="link" name="link" disabled value={invitationLink || ""} />
-                                                        </div>
-                                                    </div>
-                                                    <DialogFooter>
-                                                        <DialogClose asChild>
-                                                            <Button type="button" variant="outline">Annuler</Button>
-                                                        </DialogClose>
-                                                        <Button type="button" onClick={() => { navigator.clipboard.writeText(invitationLink || ""); }}>Copier le lien</Button>
-                                                    </DialogFooter>
-                                                </form>
-                                            </DialogContent>
-                                        </Dialog>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild>
-                                        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                                            <DialogTrigger asChild className="w-full flex justify-start">
-                                                <Button variant="ghost" onClick={() => setOpenDialog(true)}><Users /> Inviter un client</Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-106">
-                                                <form>
-                                                    <DialogHeader>
-                                                        <DialogTitle>Inviter un client</DialogTitle>
-                                                        <DialogDescription>
-                                                            Indiquer le mail du client.
-                                                        </DialogDescription>
-                                                    </DialogHeader>
-                                                    <div className="grid gap-4 mb-4">
-                                                        <div className="grid gap-3">
-                                                            <Label htmlFor="email">Email</Label>
-                                                            <Input id="email" name="email" placeholder="pedro@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                                        </div>
-                                                    </div>
-                                                    <DialogFooter>
-                                                        <DialogClose asChild>
-                                                            <Button type="button" variant="outline">Annuler</Button>
-                                                        </DialogClose>
-                                                        <InviteClientButton email={email} projectId={projectId} canClose={() => setOpenDialog(false)} />
-                                                    </DialogFooter>
-                                                </form>
-                                            </DialogContent>
-                                        </Dialog>
-                                    </DropdownMenuItem>
-                                </>
-                            )}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+
+
+                    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+                        <DialogTrigger asChild>
+                            <Button onClick={() => setOpenDialog(true)}><Plus /> Inviter un créateur</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-106">
+                            <form>
+                                <DialogHeader>
+                                    <DialogTitle>Inviter un créateur</DialogTitle>
+                                    <DialogDescription className="mb-2">
+                                        Indiquer le mail du créateur.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 mb-4">
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="email">Email</Label>
+                                        <Input id="email" name="email" placeholder="pedro@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="outline">Annuler</Button>
+                                    </DialogClose>
+                                    <InviteMakerButton email={email} projectId={projectId} canClose={() => setOpenDialog(false)} />
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
                 </ButtonGroup>
 
             </div>
@@ -323,7 +274,7 @@ export function ClientTable({ clients, isMaker, projectId }: { clients?: User[],
                                     colSpan={columns.length}
                                     className="h-24 text-center"
                                 >
-                                    Aucun client dans ce projet.
+                                    Aucun créateur dans ce projet.
                                 </TableCell>
                             </TableRow>
                         )}

@@ -1,5 +1,4 @@
-import AcceptInvitationButton from "@/src/components/button/accept-invitation-button";
-import { Button } from "@/src/components/ui/shadcn/button";
+import AcceptInvitationLinkButton from "@/src/components/button/accept-invitation-link-button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/src/components/ui/shadcn/card";
 import { InvitationStatus } from "@/src/generated/prisma/enums";
 import { prisma } from "@/src/lib/prisma";
@@ -57,7 +56,7 @@ export default async function InvitationPage({
                 )}
             </CardContent>
             <CardFooter>
-                <AcceptInvitationButton invitationId={invitationId} projectId={projectId} />
+                <AcceptInvitationLinkButton invitationId={invitationId} projectId={projectId} />
             </CardFooter>
         </Card>
     )

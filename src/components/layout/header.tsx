@@ -5,7 +5,6 @@ import Link from "next/link"
 
 import { ChevronRight, Home, Plus } from "lucide-react"
 import { SidebarTrigger } from "@/src/components/ui/shadcn/sidebar"
-import { Button } from "../ui/shadcn/button"
 
 const routeLabels: Record<string, string> = {
     dashboard: "Tableau de bord",
@@ -14,6 +13,7 @@ const routeLabels: Record<string, string> = {
     settings: "Paramètres",
     profile: "Profil",
     timeline: "Timeline",
+    team: "Équipe",
 }
 
 export default function Header() {

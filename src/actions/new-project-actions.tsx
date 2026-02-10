@@ -34,6 +34,7 @@ export async function createProject(name: string, logo: string, deadline: Date |
             deadline: deadline,
             progress: progress,
             createdAt: new Date(),
+            ownerId: user.id,
         },
     });
 

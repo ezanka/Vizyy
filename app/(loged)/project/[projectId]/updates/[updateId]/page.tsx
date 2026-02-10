@@ -84,7 +84,7 @@ export default async function UpdatePage({
     const typeConfig = typeLabels[update.type] || { label: update.type, color: "bg-gray-500/10 text-gray-500 border-gray-500/20" };
 
     return (
-        <div className="flex flex-col gap-6 my-4 mx-auto">
+        <div className="flex flex-col gap-6 my-4">
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" asChild>
                     <Link href={`/project/${projectId}/updates`}>

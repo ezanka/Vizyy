@@ -13,7 +13,7 @@ import {
     type SortingState,
     type VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, Delete, MailPlus, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, MailPlus, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/src/components/ui/shadcn/button"
 import { Checkbox } from "@/src/components/ui/shadcn/checkbox"
@@ -48,19 +48,19 @@ import {
     DialogTrigger,
 } from "@/src/components/ui/shadcn/dialog"
 import { Label } from "@/src/components/ui/shadcn/label"
-import RemoveClientButton from "../button/remove-client-button"
 import { generateInvitationLink } from "@/src/actions/generate-invitation-link-actions";
 import { InvitationLink } from "@/src/generated/prisma/client"
 import { DataTableColumnToggle } from "./data-table-column-toggle"
-import DeleteInvitationButton from "../button/delete-invitation-button";
+import DeleteInvitationLinkButton from "../button/delete-invitation-link-button";
 import CopyInvitationButton from "../button/copy-invitation-button"
+import { Invitation } from "@/src/generated/prisma/client"
 
 type InvitationLinkWithUser = InvitationLink & {
     joiner: User | null;
     user: User | null;
 };
 
-export function LinkTable({ invitationLinks, projectId }: { invitationLinks?: InvitationLinkWithUser[], projectId: string }) {
+export function LinkTable({ invitationLinks, pendingInvitations, projectId }: { invitationLinks?: InvitationLinkWithUser[], pendingInvitations?: Invitation[], projectId: string }) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
@@ -224,7 +224,7 @@ export function LinkTable({ invitationLinks, projectId }: { invitationLinks?: In
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild><CopyInvitationButton link={row.original.link} /></DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <DeleteInvitationButton invitationId={invitationId} projectId={projectId} isAccepted={status === "ACCEPTED"} />
+                                <DeleteInvitationLinkButton invitationId={invitationId} projectId={projectId} isAccepted={status === "ACCEPTED"} />
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -283,7 +283,7 @@ export function LinkTable({ invitationLinks, projectId }: { invitationLinks?: In
                                 <div className="grid gap-4 mb-4">
                                     <div className="grid gap-3">
                                         <Label htmlFor="link">Lien</Label>
-                                        <Input id="link" name="link" disabled value={invitationLink || ""} />
+                                        <Input placeholder="Génération du lien..." id="link" name="link" disabled value={invitationLink || ""} />
                                     </div>
                                 </div>
                                 <DialogFooter>
@@ -341,7 +341,7 @@ export function LinkTable({ invitationLinks, projectId }: { invitationLinks?: In
                                     colSpan={columns.length}
                                     className="h-24 text-center"
                                 >
-                                    Aucun client dans ce projet.
+                                    Aucun lien d'invitation dans ce projet.
                                 </TableCell>
                             </TableRow>
                         )}

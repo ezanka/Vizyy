@@ -5,13 +5,13 @@ import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { InvitationStatus } from "../generated/prisma/enums";
 
-export async function deleteInvitation(invitationId: string, projectId: string) {
+export async function deleteInvitationLink(invitationId: string, projectId: string) {
     const user = await getUser();
 
     if (!user) {
         return { error: "Vous devez être connecté pour créer un projet" };
     }
-    const invitation = await prisma.invitation.findUnique({
+    const invitation = await prisma.invitationLink.findUnique({
         where: {
             id: invitationId,
         }
@@ -25,13 +25,13 @@ export async function deleteInvitation(invitationId: string, projectId: string) 
         return { error: "Impossible de supprimer une invitation acceptée" };
     }
 
-    await prisma.invitation.delete({
+    await prisma.invitationLink.delete({
         where: {
             id: invitationId,
         }
     });
 
-    revalidatePath(`/project/${projectId}/team`);
+    revalidatePath(`/project/${projectId}/links`);
 
     return { success: true };
 }

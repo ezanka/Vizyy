@@ -5,13 +5,13 @@ import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { InvitationStatus } from "../generated/prisma/enums";
 
-export async function acceptInvitation(invitationId: string, projectId: string) {
+export async function acceptInvitationLink(invitationId: string, projectId: string) {
     const user = await getUser();
 
     if (!user) {
         return { error: "Vous devez être connecté pour créer un projet" };
     }
-    const invitation = await prisma.invitation.findUnique({
+    const invitation = await prisma.invitationLink.findUnique({
         where: {
             id: invitationId,
         }
@@ -45,12 +45,13 @@ export async function acceptInvitation(invitationId: string, projectId: string) 
         return { error: "Cet utilisateur est déjà membre de ce projet" };
     }
 
-    await prisma.invitation.update({
+    await prisma.invitationLink.update({
         where: {
             id: invitationId,
         },
         data: {
             status: InvitationStatus.ACCEPTED,
+            joinerId: user.id,
         }
     });
 
@@ -65,6 +66,8 @@ export async function acceptInvitation(invitationId: string, projectId: string) 
     });
 
     revalidatePath(`/notifications`);
+    revalidatePath(`/project/${projectId}/team`);
+    revalidatePath(`/project/${projectId}/clients`);
 
     return { success: true };
 }

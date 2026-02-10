@@ -16,7 +16,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { redirect } from "next/navigation";
 import ValidUpdateButton from "@/src/components/button/valid-update-button";
-import { MemberRole } from "@/src/generated/prisma/enums";
+import { MemberRole, UpdateStatus, UpdateType } from "@/src/generated/prisma/enums";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale/fr";
 import {
@@ -41,11 +41,30 @@ export default async function UpdatesPage({
         redirect('/auth/signin');
     }
 
+    const project = await prisma.organization.findUnique({
+        where: { id: projectId },
+        include: {
+            members: true,
+        },
+    })
+
+    if (!project) {
+        return <div>Projet non trouvé</div>
+    }
+
+    const isMaker = project.members.some(member => member.userId === user.id && member.role === MemberRole.MAKER);
+    const isClient = project.members.some(member => member.userId === user.id && member.role === MemberRole.CLIENT);
+
     const updates = await prisma.update.findMany({
         where: {
             organization: {
                 id: projectId,
             },
+            ...(isMaker ? {} : {
+                NOT: {
+                    status: UpdateStatus.DRAFT,
+                },
+            }),
         },
         include: {
             organization: {
@@ -63,19 +82,6 @@ export default async function UpdatesPage({
         },
     });
 
-    const project = await prisma.organization.findUnique({
-        where: { id: projectId },
-        include: {
-            members: true,
-        },
-    })
-
-    if (!project) {
-        return <div>Projet non trouvé</div>
-    }
-
-    const isMaker = project.members.some(member => member.userId === user.id && member.role === MemberRole.MAKER);
-    const isClient = project.members.some(member => member.userId === user.id && member.role === MemberRole.CLIENT);
 
     const getUserName = (userId: string | null, members: typeof updates[0]['organization']['members']) => {
         if (!userId) return "Utilisateur inconnu";
@@ -193,7 +199,11 @@ export default async function UpdatesPage({
                             </CardContent>
 
                             <CardFooter className="pt-2 pb-3">
-                                {update.valid ? (
+                                {update.status === UpdateStatus.DRAFT && isMaker ? (
+                                    <Badge variant="outline" className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                                        Brouillon
+                                    </Badge>
+                                ) : update.valid ? (
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <Tooltip>
                                             <TooltipTrigger asChild>

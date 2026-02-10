@@ -18,6 +18,7 @@ model User {
     updatedAt     DateTime  @updatedAt
     sessions      Session[]
     accounts      Account[]
+    organizations Organization[] @relation("ownerOrganizations")
 
     members     Member[]
     invitations Invitation[]
@@ -93,6 +94,8 @@ model Organization {
     metadata    String?
     deadline    DateTime?
     progress    Int       @default(0)
+    ownerId     String
+    owner       User      @relation("ownerOrganizations", fields: [ownerId], references: [id], onDelete: Cascade)
 
     members     Member[]
     invitations Invitation[]

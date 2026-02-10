@@ -1,5 +1,6 @@
 
 import { LinkTable } from "@/src/components/table/link-table";
+import { InvitationStatus, MemberRole } from "@/src/generated/prisma/enums";
 import { getUser } from "@/src/lib/auth-server";
 import { prisma } from "@/src/lib/prisma"
 
@@ -23,7 +24,7 @@ export default async function LinksPage({
         where: {
             organizationId: projectId,
             userId: user.id,
-            role: 'MAKER',
+            role: MemberRole.MAKER,
         },
     });
 
@@ -41,9 +42,19 @@ export default async function LinksPage({
         },
     });
 
+    const pendingInvitations = await prisma.invitation.findMany({
+        where: {
+            organizationId: projectId,
+            status: InvitationStatus.PENDING,
+        },
+        include: {
+            user: true,
+        },
+    });
+
     return (
         <div className="p-4">
-            <LinkTable invitationLinks={invitationLinks} projectId={projectId} />
+            <LinkTable invitationLinks={invitationLinks} pendingInvitations={pendingInvitations} projectId={projectId} />
         </div>
     )
 }

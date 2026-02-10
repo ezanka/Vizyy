@@ -44,7 +44,7 @@ export default async function EditUpdatePage({
         <div className="flex flex-col gap-6 my-4">
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" asChild>
-                    <Link href={`/project/${projectId}/updates`}>
+                    <Link href={`/project/${projectId}/updates/${updateId}`}>
                         <ArrowLeft className="h-4 w-4" />
                     </Link>
                 </Button>

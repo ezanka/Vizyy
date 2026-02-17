@@ -206,10 +206,11 @@ function EditTestSheet({ test, projectId, updates }: {
     )
 }
 
-export function TestTable({ tests, projectId, updates }: {
+export function TestTable({ tests, projectId, updates, authorized }: {
     tests?: TestWithRelations[];
     projectId: string;
     updates: Update[];
+    authorized: boolean;
 }) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -319,11 +320,11 @@ export function TestTable({ tests, projectId, updates }: {
             id: "actions",
             enableHiding: false,
             cell: ({ row }) => (
-                <EditTestSheet
+                authorized ? <EditTestSheet
                     test={row.original}
                     projectId={projectId}
                     updates={updates}
-                />
+                /> : null
             ),
         },
     ], [projectId, updates])
@@ -424,11 +425,7 @@ export function TestTable({ tests, projectId, updates }: {
                             ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button asChild>
-                        <Link href={`/project/${projectId}/test/new`}>
-                            <Plus /> Nouveau test
-                        </Link>
-                    </Button>
+                    {authorized && <Button asChild><Link href={`/project/${projectId}/test/new`}><Plus /> Nouveau test</Link></Button>}
                 </ButtonGroup>
             </div>
 

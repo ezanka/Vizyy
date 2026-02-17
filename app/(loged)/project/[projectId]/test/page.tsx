@@ -1,3 +1,4 @@
+import { isMaker } from "@/src/actions/is-maker-actions";
 import { TestTable } from "@/src/components/table/test-table";
 import { getUser } from "@/src/lib/auth-server";
 import { prisma } from "@/src/lib/prisma";
@@ -13,6 +14,7 @@ export default async function TestPage({
 }) {
     const user = await getUser()
     const { projectId } = await params;
+    const authorized = (await isMaker(projectId)).isMaker;
 
     if (!user) {
         return (
@@ -51,7 +53,7 @@ export default async function TestPage({
 
     return (
         <div className="flex flex-col gap-4 my-4 flex-1">
-            <TestTable tests={tests} projectId={projectId} updates={updates} />
+            <TestTable tests={tests} projectId={projectId} updates={updates} authorized={authorized || false} />
         </div>
     );
 }

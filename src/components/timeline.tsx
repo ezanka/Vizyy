@@ -47,7 +47,7 @@ import UpdateTimelineButton from "./button/update-timeline-button";
 import DeleteTimelineButton from "./button/delete-timeline-button";
 import { Separator } from "./ui/shadcn/separator";
 
-export default function Timeline({ timeline, updates, projectId }: { timeline: TimelineType[], updates: Update[], projectId: string }) {
+export default function Timeline({ timeline, updates, projectId, authorized }: { timeline: TimelineType[], updates: Update[], projectId: string, authorized: boolean }) {
     const getStartOfWeek = (date: Date) => {
         const d = new Date(date);
         const day = d.getDay();
@@ -178,102 +178,104 @@ export default function Timeline({ timeline, updates, projectId }: { timeline: T
                 </div>
 
                 <div className="flex justify-end flex-1">
-                    <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button>
-                                <CalendarPlus size={16} /> Nouvelle événement
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Créer un nouvel événement</DialogTitle>
-                                <DialogDescription>
-                                    Remplissez le formulaire ci-dessous pour ajouter un nouvel événement à la timeline.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4 mb-4">
-                                <div className="grid gap-3">
-                                    <Field className="mx-auto">
-                                        <FieldLabel htmlFor="name">* Nom</FieldLabel>
-                                        <Input required id="name" name="name" value={name} onChange={(e) => setName(e.target.value)} />
-                                    </Field>
-                                    <div className="flex w-full gap-4">
+                    {authorized && (
+                        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button>
+                                    <CalendarPlus size={16} /> Nouvelle événement
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Créer un nouvel événement</DialogTitle>
+                                    <DialogDescription>
+                                        Remplissez le formulaire ci-dessous pour ajouter un nouvel événement à la timeline.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 mb-4">
+                                    <div className="grid gap-3">
                                         <Field className="mx-auto">
-                                            <FieldLabel htmlFor="date-picker-start">* Date de début</FieldLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button
-                                                        variant="outline"
-                                                        id="date-picker-start"
-                                                        className="justify-start font-normal"
-                                                    >
-                                                        {startDate ? format(startDate, "PPPP", { locale: fr }) : <span>Choisir une date de début</span>}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={startDate || undefined}
-                                                        onSelect={setStartDate}
-                                                        defaultMonth={startDate || undefined}
-                                                        required
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
+                                            <FieldLabel htmlFor="name">* Nom</FieldLabel>
+                                            <Input required id="name" name="name" value={name} onChange={(e) => setName(e.target.value)} />
                                         </Field>
+                                        <div className="flex w-full gap-4">
+                                            <Field className="mx-auto">
+                                                <FieldLabel htmlFor="date-picker-start">* Date de début</FieldLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                            id="date-picker-start"
+                                                            className="justify-start font-normal"
+                                                        >
+                                                            {startDate ? format(startDate, "PPPP", { locale: fr }) : <span>Choisir une date de début</span>}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={startDate || undefined}
+                                                            onSelect={setStartDate}
+                                                            defaultMonth={startDate || undefined}
+                                                            required
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </Field>
+                                            <Field className="mx-auto">
+                                                <FieldLabel htmlFor="date-picker-end">* Date de fin</FieldLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                            id="date-picker-end"
+                                                            className="justify-start font-normal"
+                                                            disabled={!startDate}
+                                                        >
+                                                            {endDate ? format(endDate, "PPPP", { locale: fr }) : <span>Choisir une date de fin</span>}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={endDate || undefined}
+                                                            onSelect={setEndDate}
+                                                            defaultMonth={endDate || undefined}
+                                                            disabled={{
+                                                                before: new Date(startDate || 0),
+                                                            }}
+                                                            required
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </Field>
+                                        </div>
                                         <Field className="mx-auto">
-                                            <FieldLabel htmlFor="date-picker-end">* Date de fin</FieldLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button
-                                                        variant="outline"
-                                                        id="date-picker-end"
-                                                        className="justify-start font-normal"
-                                                        disabled={!startDate}
-                                                    >
-                                                        {endDate ? format(endDate, "PPPP", { locale: fr }) : <span>Choisir une date de fin</span>}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={endDate || undefined}
-                                                        onSelect={setEndDate}
-                                                        defaultMonth={endDate || undefined}
-                                                        disabled={{
-                                                            before: new Date(startDate || 0),
-                                                        }}
-                                                        required
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
+                                            <FieldLabel htmlFor="update">Associer un update</FieldLabel>
+                                            <Select value={updateId} onValueChange={setUpdateId}>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Choisir un update" />
+                                                </SelectTrigger>
+                                                <SelectContent id="update">
+                                                    {updates.map((update) => (
+                                                        <SelectItem key={update.id} value={update.id}>
+                                                            {update.title}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </Field>
                                     </div>
-                                    <Field className="mx-auto">
-                                        <FieldLabel htmlFor="update">Associer un update</FieldLabel>
-                                        <Select value={updateId} onValueChange={setUpdateId}>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Choisir un update" />
-                                            </SelectTrigger>
-                                            <SelectContent id="update">
-                                                {updates.map((update) => (
-                                                    <SelectItem key={update.id} value={update.id}>
-                                                        {update.title}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </Field>
                                 </div>
-                            </div>
-                            <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button type="button" variant="outline">Annuler</Button>
-                                </DialogClose>
-                                <NewTimelineButton projectId={projectId} name={name} startDate={startDate!} endDate={endDate!} updateId={updateId} onSuccess={submitForm} />
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="outline">Annuler</Button>
+                                    </DialogClose>
+                                    <NewTimelineButton projectId={projectId} name={name} startDate={startDate!} endDate={endDate!} updateId={updateId} onSuccess={submitForm} />
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    )}
                 </div>
             </div>
             <div className="flex overflow-x-auto border-b border-border pb-2 w-full gap-1">
@@ -326,6 +328,152 @@ export default function Timeline({ timeline, updates, projectId }: { timeline: T
 
                             const leftPosition = (startDay / 7) * 100;
                             const width = ((endDay - startDay + 1) / 7) * 100;
+
+                            if (!authorized) {
+                                return (
+                                    <React.Fragment key={event.id}>
+                                        <Sheet open={isUpdateSheetOpen && timelineId === event.id} onOpenChange={setIsUpdateSheetOpen}>
+                                            <SheetTrigger asChild>
+                                                <div
+                                                    className="absolute h-10 bg-primary hover:bg-primary/90 transition-all rounded-lg cursor-pointer group overflow-hidden"
+                                                    style={{
+                                                        left: `${leftPosition}%`,
+                                                        width: `${width}%`,
+                                                        top: `${index * 48}px`,
+                                                    }}
+                                                    title={`${event.name} (${new Date(event.startDate).toLocaleDateString("fr-FR")} - ${new Date(event.endDate).toLocaleDateString("fr-FR")})`}
+                                                    onClick={() => editSubmitForm(event.name, event.startDate, event.endDate, event.id, event.updateId)}
+                                                >
+                                                    {startsBeforeWeek && (
+                                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-foreground/40" />
+                                                    )}
+
+                                                    <div className="relative flex items-center gap-2 px-3 h-full">
+                                                        <span className="truncate text-primary-foreground text-sm font-medium flex-1">
+                                                            {event.name}
+                                                        </span>
+
+                                                        {event.updateId && (
+                                                            <div className="shrink-0 w-5 h-5 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                                                                <Megaphone size={12} className="text-primary-foreground" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {endsAfterWeek && (
+                                                        <div className="absolute right-0 top-0 bottom-0 w-1 bg-primary-foreground/40" />
+                                                    )}
+                                                </div>
+                                            </SheetTrigger>
+                                            <SheetContent>
+                                                <SheetHeader>
+                                                    <SheetTitle>Modifier un événement</SheetTitle>
+                                                    <SheetDescription>{event.name}</SheetDescription>
+                                                </SheetHeader>
+                                                <div className="grid gap-4 mb-4 ml-2 mr-2">
+                                                    <div className="grid gap-3">
+                                                        <Field className="mx-auto">
+                                                            <FieldLabel htmlFor="name">* Nom</FieldLabel>
+                                                            <Input required id="name" name="name" value={name} onChange={(e) => setName(e.target.value)} disabled={!authorized} />
+                                                        </Field>
+                                                        <Field className="mx-auto">
+                                                            <FieldLabel htmlFor="date-picker-start">* Date de début</FieldLabel>
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        id="date-picker-start"
+                                                                        className="justify-start font-normal"
+                                                                        disabled={!authorized}
+                                                                    >
+                                                                        {startDate ? format(startDate, "PPPP", { locale: fr }) : <span>Choisir une date de début</span>}
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-0" align="start">
+                                                                    <Calendar
+                                                                        mode="single"
+                                                                        selected={startDate || undefined}
+                                                                        onSelect={setStartDate}
+                                                                        defaultMonth={startDate || undefined}
+                                                                        required
+                                                                    />
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </Field>
+                                                        <Field className="mx-auto">
+                                                            <FieldLabel htmlFor="date-picker-end">* Date de fin</FieldLabel>
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        id="date-picker-end"
+                                                                        className="justify-start font-normal"
+                                                                        disabled={!startDate || !authorized}
+                                                                    >
+                                                                        {endDate ? format(endDate, "PPPP", { locale: fr }) : <span>Choisir une date de fin</span>}
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-0" align="start">
+                                                                    <Calendar
+                                                                        mode="single"
+                                                                        selected={endDate || undefined}
+                                                                        onSelect={setEndDate}
+                                                                        defaultMonth={endDate || undefined}
+                                                                        disabled={{
+                                                                            before: new Date(startDate || 0),
+                                                                        }}
+                                                                        required
+                                                                    />
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </Field>
+                                                        <Field className="mx-auto">
+                                                            <FieldLabel htmlFor="update">Associer un update</FieldLabel>
+                                                            <div className="flex items-center gap-1">
+                                                                {updateId && (
+                                                                    <Button asChild disabled={!updateId} variant="outline">
+                                                                        <Link href={`/project/${projectId}/updates/${updateId}`}>
+                                                                            <Eye size={16} />
+                                                                        </Link>
+                                                                    </Button>
+                                                                )}
+                                                                <Select value={updateId || ""} onValueChange={setUpdateId}>
+                                                                    <SelectTrigger className="w-full" disabled={!authorized}>
+                                                                        <SelectValue placeholder="Choisir un update" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent id="update">
+                                                                        {updates.map((update) => (
+                                                                            <SelectItem key={update.id} value={update.id}>
+                                                                                {update.title}
+                                                                            </SelectItem>
+                                                                        ))}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                {updateId && (
+                                                                    <Button disabled={!updateId || !authorized} onClick={() => setUpdateId("")} variant="outline">
+                                                                        <Delete />
+                                                                    </Button>
+                                                                )}
+                                                            </div>
+                                                        </Field>
+                                                    </div>
+                                                </div>
+                                                <SheetFooter>
+                                                    <SheetClose asChild>
+                                                        <Button variant="outline">Fermer</Button>
+                                                    </SheetClose>
+                                                </SheetFooter>
+                                            </SheetContent>
+                                        </Sheet>
+                                        {index < sortedTimeline.length - 1 && (
+                                            <Separator
+                                                className="absolute left-0 right-0"
+                                                style={{ top: `${(index + 1) * 48 - 4}px` }}
+                                            />
+                                        )}
+                                    </React.Fragment>
+                                )
+                            }
 
                             return (
                                 <React.Fragment key={event.id}>

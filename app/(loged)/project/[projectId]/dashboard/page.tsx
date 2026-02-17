@@ -7,6 +7,7 @@ import { ArrowRight, BugOff, ClockAlert, Flag, Gauge, HardDriveDownload, ListPlu
 import Link from "next/link"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { isMaker } from "@/src/actions/is-maker-actions"
 
 type Params = {
     projectId: string;
@@ -30,6 +31,8 @@ export default async function DashboardPage({
         },
     });
 
+    const authorized = (await isMaker(projectId)).isMaker;
+
     return (
         <div className="flex flex-col gap-4 my-4">
             <div className="flex items-center justify-between mb-4">
@@ -37,7 +40,7 @@ export default async function DashboardPage({
                     <h1 className="text-2xl font-bold">Welcome to your Dashboard !</h1>
                     <p className="text-sm text-muted-foreground">"Prêt à faire avancer {projectInfo?.name || "None"} ?"</p>
                 </div>
-                <Button asChild><Link href={`/project/${projectId}/updates/new`}><Plus /> Nouvelle update</Link></Button>
+                {authorized && <Button asChild><Link href={`/project/${projectId}/updates/new`}><Plus /> Nouvelle update</Link></Button>}
             </div>
             <div className="grid grid-cols-4 gap-4 mb-4">
                 <Card className="border bg-background rounded-md flex flex-col justify-between">

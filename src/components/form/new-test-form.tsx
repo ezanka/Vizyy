@@ -17,14 +17,14 @@ import { Textarea } from "../ui/shadcn/textarea"
 import { Update } from "@/src/generated/prisma/client"
 import { createTest } from "@/src/actions/create-test-actions"
 
-export default function NewTestForm({ updates, projectId }: { updates: Update[], projectId: string }) {
+export default function NewTestForm({ updates, projectId, authorized }: { updates: Update[], projectId: string, authorized: boolean }) {
     const [type, setType] = React.useState<TestType>(TestType.INTEGRATION)
     const [status, setStatus] = React.useState<TestStatus>(TestStatus.PENDING)
     const [details, setDetails] = React.useState<string>("")
     const [update, setUpdate] = React.useState<Update>()
 
     async function handleCreateTest() {
-        if (!update) return;
+        if (!update || !authorized) return;
         createTest(projectId, type, status, details, update);
 
         redirect(`/project/${projectId}/test`);
@@ -113,7 +113,7 @@ export default function NewTestForm({ updates, projectId }: { updates: Update[],
                     <Textarea id="name" placeholder="Détails du test" value={details} onChange={(e) => setDetails(e.target.value)} />
                 </div>
 
-                <Button onClick={handleCreateTest} className="w-full">
+                <Button onClick={handleCreateTest} disabled={!authorized} className="w-full">
                     Créer
                 </Button>
             </CardContent>

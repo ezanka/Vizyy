@@ -39,8 +39,6 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
 
     const CurrentIcon = activeOrganization?.logo && iconMap[activeOrganization.logo] ? iconMap[activeOrganization.logo] : Globe;
 
-    console.log("Projects in HeaderSidebar:", projects.map(p => ({ id: p.id, name: p.name })));
-
     return (
         <SidebarHeader>
             <DropdownMenu>

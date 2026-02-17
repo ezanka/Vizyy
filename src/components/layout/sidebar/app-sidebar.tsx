@@ -7,6 +7,7 @@ import {
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton,
+    SidebarFooter,
 } from "@/src/components/ui/shadcn/sidebar"
 import {
     Home,
@@ -18,7 +19,8 @@ import {
     Megaphone,
     Users,
     MessageCircleMore,
-    UserRoundCog
+    UserRoundCog,
+    Settings
 } from "lucide-react"
 import { getUser } from "@/src/lib/auth-server"
 import Link from "next/link"
@@ -185,7 +187,13 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
                     )}
                 </SidebarContent>
 
+                <SidebarFooter className="p-4 mt-auto">
+                    <Link href={"/settings"} className="py-1 cursor-pointer hover:bg-border/50 rounded-sm flex items-center justify-center bg-border/30 border">
+                        <Settings className="inline-block h-4 w-4 mr-2" />
+                        <div className="font-medium">Paramètres</div>
+                    </Link>
                 <FooterSidebar userName={userName} userEmail={userEmail} userInitial={userInitial} projectId={projectId} />
+                </SidebarFooter>
             </div>
         </Sidebar>
     )

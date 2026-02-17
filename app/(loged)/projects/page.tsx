@@ -69,8 +69,10 @@ export default async function ProjectsPage() {
                         ))
                     )}
                 </div>
-                <div className="w-100% h-px bg-muted my-8">
-                    <FooterSidebar userName={user.name || ""} userEmail={user.email || ""} userInitial={user.name ? user.name.charAt(0).toUpperCase() : ""} projectId="" />
+                <div className="w-full h-px bg-muted my-8">
+                    <div className="pt-4">
+                        <FooterSidebar userName={user.name || ""} userEmail={user.email || ""} userInitial={user.name ? user.name.charAt(0).toUpperCase() : ""} projectId="" />
+                    </div>
                 </div>
 
             </div>

@@ -20,6 +20,7 @@ import { format } from "date-fns/format"
 import { fr } from "date-fns/locale"
 import { Calendar } from "@/src/components/ui/shadcn/calendar"
 import { Slider } from "@/src/components/ui/shadcn/slider"
+import { revalidatePath } from "next/cache"
 
 export default function NewPage() {
 
@@ -34,6 +35,8 @@ export default function NewPage() {
     async function handleCreateProject() {
         const result = createProject(projectName, selectedLogo, deadline, progress);
         const data = await result;
+
+        revalidatePath("/");
 
         redirect(`/project/${data.project?.id}/dashboard`);
     }

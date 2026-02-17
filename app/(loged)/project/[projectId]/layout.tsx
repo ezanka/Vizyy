@@ -3,6 +3,7 @@ import Header from "@/src/components/layout/header";
 import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 
 type Params = {
     projectId: string;
@@ -15,6 +16,7 @@ export default async function Layout({
     children: React.ReactNode;
     params: Promise<Params>;
 }>) {
+    await connection();
     const { projectId } = await params;
 
     const user = await getUser();

@@ -11,16 +11,14 @@ import {
 import { Input } from "@/src/components/ui/shadcn/input"
 import { Label } from "@/src/components/ui/shadcn/label"
 import { Brush, ChevronDownIcon, ClipboardList, Globe, Laptop, Monitor, Palette, Sparkles, Tag, Zap } from "lucide-react"
-import { createProject } from "@/src/actions/new-project-actions"
 import React from "react"
-import { redirect } from "next/navigation"
 import { Field, FieldGroup, FieldLabel } from "@/src/components/ui/shadcn/field"
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/shadcn/popover"
 import { format } from "date-fns/format"
 import { fr } from "date-fns/locale"
 import { Calendar } from "@/src/components/ui/shadcn/calendar"
 import { Slider } from "@/src/components/ui/shadcn/slider"
-import { revalidatePath } from "next/cache"
+import CreateProjectButton from "@/src/components/button/create-project-button"
 
 export default function NewPage() {
 
@@ -31,15 +29,6 @@ export default function NewPage() {
     const [deadline, setDeadline] = React.useState<Date | undefined>(undefined)
 
     const [progress, setProgress] = React.useState<number>(0)
-
-    async function handleCreateProject() {
-        const result = createProject(projectName, selectedLogo, deadline, progress);
-        const data = await result;
-
-        revalidatePath("/");
-
-        redirect(`/project/${data.project?.id}/dashboard`);
-    }
 
     return (
         <Card className="w-full max-w-md">
@@ -126,9 +115,7 @@ export default function NewPage() {
                     </div>
                 </Field>
 
-                <Button onClick={handleCreateProject} className="w-full">
-                    Créer
-                </Button>
+                <CreateProjectButton projectName={projectName} selectedLogo={selectedLogo} deadline={deadline} progress={progress} />
             </CardContent>
         </Card>
     )

@@ -17,7 +17,7 @@ interface HeaderSidebarProps {
     projectId: string;
 }
 
-export default async function headerSideBar({ projects, projectId }: HeaderSidebarProps) {
+export default async function HeaderSideBar({ projects, projectId }: HeaderSidebarProps) {
 
     const activeOrganization = await prisma.organization.findUnique({
         where: {
@@ -53,7 +53,7 @@ export default async function headerSideBar({ projects, projectId }: HeaderSideb
                         <ChevronsUpDown className="w-4 h-4 ml-2" />
                     </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent side="right" className="mt-2">
+                <DropdownMenuContent side="right" className="mt-2" collisionPadding={10} avoidCollisions={true}>
                     {projects.map((project) => {
                         const LogoIcon = project.logo && iconMap[project.logo] ? iconMap[project.logo] : Globe;
 

@@ -194,7 +194,7 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
                 </SidebarContent>
 
                 <SidebarFooter className="p-4 mt-auto">
-                    <Link href={"/settings"} className="py-1 cursor-pointer hover:bg-border/50 rounded-sm flex items-center justify-center bg-border/30 border">
+                    <Link href={`/project/${projectId}/settings`} className="py-1 cursor-pointer hover:bg-border/50 rounded-sm flex items-center justify-center bg-border/30 border">
                         <Settings className="inline-block h-4 w-4 mr-2" />
                         <div className="font-medium">Paramètres</div>
                     </Link>

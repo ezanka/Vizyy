@@ -20,7 +20,8 @@ import {
     Users,
     MessageCircleMore,
     UserRoundCog,
-    Settings
+    Settings,
+    Bug
 } from "lucide-react"
 import { getUser } from "@/src/lib/auth-server"
 import Link from "next/link"
@@ -69,6 +70,11 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
             title: "Assets",
             url: `/assets`,
             icon: Files,
+        },
+        {
+            title: "Test",
+            url: `/test`,
+            icon: Bug,
         },
         {
             title: "Feedback",

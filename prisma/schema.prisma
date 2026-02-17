@@ -28,6 +28,9 @@ model User {
     updatesValidated Update[] @relation("validatedUpdates")
     updatesAuthored  Update[] @relation("authorUpdates")
     updatesUpdated  Update[] @relation("updaterUpdates")
+
+    testsCreated Test[] @relation("createdByTests")
+    testsUpdated Test[] @relation("updatedByTests")
     
     feedback      Feedback[]
 
@@ -102,6 +105,7 @@ model Organization {
     invitationLinks InvitationLink[]
     updates     Update[]
     timelines   Timeline[]
+    tests       Test[]
 
     @@unique([slug])
     @@map("organization")
@@ -216,6 +220,8 @@ model Update {
 
     feedback      Feedback[]
 
+    tests         Test[]
+
     createdAt      DateTime  @default(now())
     updatedAt      DateTime? 
 
@@ -247,5 +253,41 @@ model Feedback {
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     content   String
     createdAt DateTime @default(now())
+    updatedAt DateTime? @updatedAt
+}
+
+enum TestStatus {
+    PASSED
+    FAILED
+    PENDING
+}
+
+enum TestType {
+    UNIT
+    INTEGRATION
+    E2E
+    OTHER
+}
+
+model Test {
+    id        String   @id
+
+    projectId String
+    project   Organization @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+    updateId  String
+    update    Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
+
+    type      TestType
+    status    TestStatus
+    details   String?
+
+
+    createdById String
+    createdBy   User?     @relation("createdByTests", fields: [createdById], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+
+    updatedById String?
+    updatedBy   User?     @relation("updatedByTests", fields: [updatedById], references: [id], onDelete: SetNull)
     updatedAt DateTime? @updatedAt
 }

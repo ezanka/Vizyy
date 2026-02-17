@@ -39,6 +39,8 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
 
     const CurrentIcon = activeOrganization?.logo && iconMap[activeOrganization.logo] ? iconMap[activeOrganization.logo] : Globe;
 
+    console.log("Projects in HeaderSidebar:", projects.map(p => ({ id: p.id, name: p.name })));
+
     return (
         <SidebarHeader>
             <DropdownMenu>
@@ -53,7 +55,7 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
                         <ChevronsUpDown className="w-4 h-4 ml-2" />
                     </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent side="right" className="mt-2" collisionPadding={10} avoidCollisions={true}>
+                <DropdownMenuContent side="right" className="mt-2">
                     {projects.map((project) => {
                         const LogoIcon = project.logo && iconMap[project.logo] ? iconMap[project.logo] : Globe;
 

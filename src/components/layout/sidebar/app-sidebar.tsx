@@ -42,8 +42,6 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
             }
         }
     })
-    
-    console.log("Projects in AppSidebar:", projects.map(p => ({ id: p.id, name: p.name })));
 
     const userRole = await prisma.member.findFirst({
         where: {

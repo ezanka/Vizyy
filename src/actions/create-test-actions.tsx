@@ -4,7 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
-import type { TestType, TestStatus } from "@/src/generated/prisma/enums";
+import { TestType, TestStatus } from "@/src/generated/prisma/enums";
 import { Update } from "@/src/generated/prisma/client";
 
 export async function createTest(projectId: string, type: TestType, status: TestStatus, details: string, update: Update) {
@@ -24,6 +24,9 @@ export async function createTest(projectId: string, type: TestType, status: Test
             details,
             createdById: user.id,
             createdAt: new Date(),
+            updatedAt: null,
+            passedById: status === TestStatus.PASSED ? user.id : null,
+            passedAt: status === TestStatus.PASSED ? new Date() : null,
         },
     });
 

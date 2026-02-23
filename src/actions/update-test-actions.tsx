@@ -3,7 +3,7 @@
 import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
-import type { TestType, TestStatus } from "@/src/generated/prisma/enums";
+import { TestType, TestStatus } from "@/src/generated/prisma/enums";
 import { Update } from "@/src/generated/prisma/client";
 
 export async function updateTest(projectId: string, testId: string, type: TestType, status: TestStatus, details: string, update: Update) {
@@ -31,6 +31,14 @@ export async function updateTest(projectId: string, testId: string, type: TestTy
                 connect: {
                     id: user.id,
                 }
+            },
+            passedAt: status === TestStatus.PASSED ? new Date() : null,
+            passedBy: status === TestStatus.PASSED ? {
+                connect: {
+                    id: user.id,
+                }
+            } : {
+                disconnect: true,
             },
         },
     });

@@ -31,6 +31,7 @@ model User {
 
     testsCreated Test[] @relation("createdByTests")
     testsUpdated Test[] @relation("updatedByTests")
+    testsPassed Test[] @relation("passedByTests")
     
     feedback      Feedback[]
 
@@ -290,4 +291,10 @@ model Test {
     updatedById String?
     updatedBy   User?     @relation("updatedByTests", fields: [updatedById], references: [id], onDelete: SetNull)
     updatedAt DateTime? @updatedAt
+
+    passedById String?
+    passedBy   User?     @relation("passedByTests", fields: [passedById], references: [id], onDelete: SetNull)
+    passedAt DateTime?
+
+    @@index([projectId])
 }

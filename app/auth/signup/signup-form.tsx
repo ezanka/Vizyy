@@ -15,6 +15,7 @@ import { authClient } from "@/src/lib/auth-client"
 import Link from "next/link"
 import { Github } from "lucide-react"
 import { useState } from "react"
+import { Spinner } from "@/src/components/ui/shadcn/spinner"
 
 const signUpWithGitHub = async () => {
     await authClient.signIn.social({
@@ -26,6 +27,7 @@ export function SignUpForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
         name: "",
@@ -39,12 +41,15 @@ export function SignUpForm({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        setIsLoading(true);
         if (formData.password !== formData.confirmPassword) {
             alert("Les mots de passe ne correspondent pas")
+            setIsLoading(false);
             return
         }
         if (formData.password.length < 8) {
             alert("Le mot de passe doit contenir au moins 8 caractères")
+            setIsLoading(false);
             return
         }
 
@@ -58,13 +63,17 @@ export function SignUpForm({
 
             if (error) {
                 alert(error.message || "Erreur lors de l'inscription")
+                setIsLoading(false);
                 return
             }
+
+            setIsLoading(false);
 
             window.location.href = "/projects"
         } catch (err) {
             console.error("Erreur d'inscription:", err)
             alert("Une erreur est survenue lors de l'inscription")
+            setIsLoading(false);
         }
     }
 
@@ -133,8 +142,8 @@ export function SignUpForm({
                             </Field>
 
                             <Field>
-                                <Button type="submit" className="w-full">
-                                    Créer mon compte
+                                <Button type="submit" disabled={isLoading}>
+                                    {isLoading ? <><Spinner /> Création en cours</> : "Créer mon compte"}
                                 </Button>
                             </Field>
 

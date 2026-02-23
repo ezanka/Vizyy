@@ -55,6 +55,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Textarea } from "../ui/shadcn/textarea"
 import { updateTest } from "@/src/actions/update-test-actions"
 import { Prisma } from "@/src/generated/prisma/client"
+import UpdateTestButton from "../button/update-test-button"
 
 export type TestWithRelations = Prisma.TestGetPayload<{
     include: {
@@ -74,10 +75,11 @@ export type TestWithRelations = Prisma.TestGetPayload<{
     };
 }>;
 
-function EditTestSheet({ test, projectId, updates }: {
+function EditTestSheet({ test, projectId, updates, authorized }: {
     test: TestWithRelations;
     projectId: string;
     updates: Update[];
+    authorized: boolean;
 }) {
     const [open, setOpen] = React.useState(false)
     const [status, setStatus] = React.useState<TestStatus>(test.status)
@@ -91,14 +93,6 @@ function EditTestSheet({ test, projectId, updates }: {
         setDetails(test.details ?? "")
         setUpdateId(test.updateId ?? "")
     }, [test])
-
-    const handleSave = () => {
-        const update = updates.find(u => u.id === updateId) ?? test.update
-        if (!update) return
-
-        updateTest(projectId, test.id, type, status, details, update)
-        setOpen(false)
-    }
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
@@ -199,7 +193,7 @@ function EditTestSheet({ test, projectId, updates }: {
                     <SheetClose asChild>
                         <Button variant="outline">Annuler</Button>
                     </SheetClose>
-                    <Button onClick={handleSave}>Modifier le test</Button>
+                    <UpdateTestButton projectId={projectId} type={type} statut={status} details={details} update={updates.find(u => u.id === updateId)} authorized={authorized} test={test} />
                 </SheetFooter>
             </SheetContent>
         </Sheet>
@@ -285,28 +279,28 @@ export function TestTable({ tests, projectId, updates, authorized }: {
             },
         },
         {
-            accessorKey: "updatedAt",
+            accessorKey: "passedAt",
             header: () => <div>Réalisé le</div>,
             cell: ({ row }) => (
                 <div className="capitalize">
-                    {!row.getValue("updatedAt")
+                    {!row.getValue("passedAt")
                         ? <span className="text-gray-500">Non réalisé</span>
-                        : format(new Date(row.getValue("updatedAt") as string | Date), "Pp", { locale: fr })}
+                        : format(new Date(row.getValue("passedAt") as string | Date), "Pp", { locale: fr })}
                 </div>
             ),
         },
         {
-            accessorKey: "updatedById",
+            accessorKey: "passedById",
             header: () => <div>Réalisé par</div>,
             cell: ({ row }) => {
                 const members = row.original.update?.organization?.members ?? [];
-                const updatedBy = members.find(m => m.userId === row.getValue("updatedById"));;
+                const updatedBy = members.find(m => m.userId === row.getValue("passedById"));;
 
                 return (
                     <div className="capitalize">
-                        {!row.getValue("updatedById")
+                        {!row.getValue("passedById")
                             ? <span className="text-gray-500">Non réalisé</span>
-                            : updatedBy?.user?.name ?? row.getValue("updatedById")}
+                            : updatedBy?.user?.name ?? row.getValue("passedById")}
                     </div>
                 );
             },
@@ -324,6 +318,7 @@ export function TestTable({ tests, projectId, updates, authorized }: {
                     test={row.original}
                     projectId={projectId}
                     updates={updates}
+                    authorized={authorized}
                 /> : null
             ),
         },

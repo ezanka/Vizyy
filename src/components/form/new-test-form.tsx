@@ -10,25 +10,17 @@ import {
 } from "@/src/components/ui/shadcn/card"
 import { Label } from "@/src/components/ui/shadcn/label"
 import React from "react"
-import { redirect } from "next/navigation"
 import { TestStatus, TestType } from "@/src/generated/prisma/enums"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/shadcn/select"
 import { Textarea } from "../ui/shadcn/textarea"
 import { Update } from "@/src/generated/prisma/client"
-import { createTest } from "@/src/actions/create-test-actions"
+import CreateTestButton from "../button/create-test-button"
 
 export default function NewTestForm({ updates, projectId, authorized }: { updates: Update[], projectId: string, authorized: boolean }) {
     const [type, setType] = React.useState<TestType>(TestType.INTEGRATION)
     const [status, setStatus] = React.useState<TestStatus>(TestStatus.PENDING)
     const [details, setDetails] = React.useState<string>("")
     const [update, setUpdate] = React.useState<Update>()
-
-    async function handleCreateTest() {
-        if (!update || !authorized) return;
-        createTest(projectId, type, status, details, update);
-
-        redirect(`/project/${projectId}/test`);
-    }
 
     return (
         <Card className="w-full max-w-md">
@@ -113,9 +105,7 @@ export default function NewTestForm({ updates, projectId, authorized }: { update
                     <Textarea id="name" placeholder="Détails du test" value={details} onChange={(e) => setDetails(e.target.value)} />
                 </div>
 
-                <Button onClick={handleCreateTest} disabled={!authorized} className="w-full">
-                    Créer
-                </Button>
+                <CreateTestButton projectId={projectId} type={type} statut={status} details={details} update={update} authorized={authorized} />
             </CardContent>
         </Card>
     )

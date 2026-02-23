@@ -38,7 +38,7 @@ export default async function DashboardPage({
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h1 className="text-2xl font-bold">Welcome to your Dashboard !</h1>
-                    <p className="text-sm text-muted-foreground">"Prêt à faire avancer {projectInfo?.name || "None"} ?"</p>
+                    <p className="text-sm text-muted-foreground mt-1">"Prêt à faire avancer {projectInfo?.name || "None"} ?"</p>
                 </div>
                 {authorized && <Button asChild><Link href={`/project/${projectId}/updates/new`}><Plus /> Nouvelle update</Link></Button>}
             </div>

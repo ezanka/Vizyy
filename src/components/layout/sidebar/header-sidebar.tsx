@@ -55,7 +55,24 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
                     </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="right" className="mt-2">
-                    {/* <DropdownMenuGroup>
+                    <DropdownMenuGroup>
+                        {Object.values(projects).map((p) => {
+                            const Logo = p.logo && iconMap[p.logo] ? iconMap[p.logo] : Globe;
+
+                            return (
+                                <DropdownMenuItem key={p.id} asChild>
+                                    <Link href={`/project/${p.id}/dashboard`}>
+                                        <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
+                                            <Logo className="inline-block h-4 w-4" />
+                                        </div>
+                                        {p.name}
+                                    </Link>
+                                </DropdownMenuItem>
+                            )
+                        })}
+                        <DropdownMenuSeparator />
+                    </DropdownMenuGroup>
+                    <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
                             <Link href="/projects">
                                 <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
@@ -73,23 +90,6 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
                                 <p>Nouveau projet</p>
                             </Link>
                         </DropdownMenuItem>
-                    </DropdownMenuGroup> */}
-                    <DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        {projects.map((project) => {
-                            const LogoIcon = project.logo && iconMap[project.logo] ? iconMap[project.logo] : Globe;
-
-                            return (
-                                <DropdownMenuItem key={project.id} asChild>
-                                    <Link href={`/project/${project.id}/dashboard`}>
-                                        <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                            <LogoIcon className="inline-block h-4 w-4" />
-                                        </div>
-                                        {project.name}
-                                    </Link>
-                                </DropdownMenuItem>
-                            )
-                        })}
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>

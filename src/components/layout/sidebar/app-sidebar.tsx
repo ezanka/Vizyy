@@ -131,17 +131,6 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
     return (
         <Sidebar className="border-none">
             <div className="border-none bg-background w-full flex flex-col h-full">
-                {projects.map((project) => {
-
-                    return (
-                        <div key={project.id}>
-                            <Link href={`/project/${project.id}/dashboard`}>
-                                {project.name}
-                            </Link>
-                        </div>
-                    )
-                })}
-
                 <HeaderSidebar projects={projects} projectId={projectId} />
 
                 <SidebarContent>

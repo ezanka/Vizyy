@@ -33,7 +33,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/src/components/ui/shadcn/table"
-import { Test, Update } from "@/src/generated/prisma/client"
+import { Update } from "@/src/generated/prisma/client"
 import { TestStatus, TestType } from "@/src/generated/prisma/enums"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -53,9 +53,9 @@ import {
 import { Field, FieldGroup, FieldLabel, FieldSet } from "../ui/shadcn/field"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/shadcn/select"
 import { Textarea } from "../ui/shadcn/textarea"
-import { updateTest } from "@/src/actions/update-test-actions"
 import { Prisma } from "@/src/generated/prisma/client"
 import UpdateTestButton from "../button/update-test-button"
+import DeleteTestButton from "../button/delete-test-button"
 
 export type TestWithRelations = Prisma.TestGetPayload<{
     include: {
@@ -193,7 +193,10 @@ function EditTestSheet({ test, projectId, updates, authorized }: {
                     <SheetClose asChild>
                         <Button variant="outline">Annuler</Button>
                     </SheetClose>
-                    <UpdateTestButton projectId={projectId} type={type} statut={status} details={details} update={updates.find(u => u.id === updateId)} authorized={authorized} test={test} />
+                    <div className="flex items-center gap-1">
+                        <UpdateTestButton projectId={projectId} type={type} statut={status} details={details} update={updates.find(u => u.id === updateId)} authorized={authorized} test={test} />
+                        <DeleteTestButton projectId={projectId} authorized={authorized} test={test} />
+                    </div>
                 </SheetFooter>
             </SheetContent>
         </Sheet>

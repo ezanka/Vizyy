@@ -12,7 +12,6 @@ import {
 } from "@/src/components/ui/shadcn/dropdown-menu"
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
-import { unstable_noStore as noStore } from "next/cache"
 
 interface HeaderSidebarProps {
     projects: { id: string; name: string; logo: string | null }[];
@@ -20,7 +19,6 @@ interface HeaderSidebarProps {
 }
 
 export default async function HeaderSideBar({ projects, projectId }: HeaderSidebarProps) {
-    noStore();
 
     const activeOrganization = await prisma.organization.findUnique({
         where: {
@@ -57,7 +55,7 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
                     </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="right" className="mt-2">
-                    <DropdownMenuGroup>
+                    {/* <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
                             <Link href="/projects">
                                 <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
@@ -75,7 +73,7 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
                                 <p>Nouveau projet</p>
                             </Link>
                         </DropdownMenuItem>
-                    </DropdownMenuGroup>
+                    </DropdownMenuGroup> */}
                     <DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         {projects.map((project) => {

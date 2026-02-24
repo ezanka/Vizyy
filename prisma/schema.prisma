@@ -261,40 +261,61 @@ enum TestStatus {
     PASSED
     FAILED
     PENDING
+    BLOCKED
 }
 
 enum TestType {
     UNIT
     INTEGRATION
+    FUNCTIONAL
+    ACCEPTANCE
     E2E
+    PERFORMANCE
+    REGRESSION
+    STRESS
+    CONFIGURATION
+    UI
     OTHER
 }
 
+enum TestEnvironment {
+    DEVELOPMENT
+    STAGING
+    PRODUCTION
+}
+
 model Test {
-    id        String   @id
+    id          String   @id
 
-    projectId String
-    project   Organization @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId   String
+    project     Organization @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-    updateId  String
-    update    Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
+    updateId    String
+    update      Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
 
-    type      TestType
-    status    TestStatus
-    details   String?
+    name        String
+    actions     String
+    results     String
 
+    type        TestType
+    status      TestStatus
+    environment TestEnvironment @default(DEVELOPMENT)
+
+    isApproved  Boolean?
 
     createdById String
-    createdBy   User?     @relation("createdByTests", fields: [createdById], references: [id], onDelete: Cascade)
-    createdAt DateTime @default(now())
+    createdBy   User     @relation("createdByTests", fields: [createdById], references: [id], onDelete: Cascade)
+    createdAt   DateTime @default(now())
 
     updatedById String?
-    updatedBy   User?     @relation("updatedByTests", fields: [updatedById], references: [id], onDelete: SetNull)
-    updatedAt DateTime? @updatedAt
+    updatedBy   User?    @relation("updatedByTests", fields: [updatedById], references: [id], onDelete: SetNull)
+    updatedAt   DateTime? @updatedAt
 
-    passedById String?
-    passedBy   User?     @relation("passedByTests", fields: [passedById], references: [id], onDelete: SetNull)
-    passedAt DateTime?
+    passedById  String?
+    passedBy    User?    @relation("passedByTests", fields: [passedById], references: [id], onDelete: SetNull)
+    passedAt    DateTime?
 
     @@index([projectId])
+    @@index([updateId])
+    @@index([type, status])
 }

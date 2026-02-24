@@ -3,10 +3,10 @@
 import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
-import { TestType, TestStatus } from "@/src/generated/prisma/enums";
+import { TestType, TestStatus, TestEnvironment } from "@/src/generated/prisma/enums";
 import { Update } from "@/src/generated/prisma/client";
 
-export async function updateTest(projectId: string, testId: string, type: TestType, status: TestStatus, details: string, update: Update) {
+export async function updateTest(projectId: string, testId: string, name: string, type: TestType, status: TestStatus, actions: string, results: string, environment: TestEnvironment, update: Update) {
     const user = await getUser();
 
     if (!user) {
@@ -18,9 +18,12 @@ export async function updateTest(projectId: string, testId: string, type: TestTy
             id: testId,
         },
         data: {
+            name,
             type,
             status,
-            details,
+            actions,
+            results,
+            environment,
             update: {
                 connect: {
                     id: update?.id,

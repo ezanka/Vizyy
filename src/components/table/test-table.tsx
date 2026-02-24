@@ -13,7 +13,7 @@ import {
     type SortingState,
     type VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Box, ChevronDown, CircleCheck, CircleX, Clock, FlaskConical, Funnel, GitMerge, ListChecks, ListRestart, MonitorCheck, Plus, SquarePen } from "lucide-react"
+import { ArrowUpDown, Box, ChevronDown, CircleCheck, CircleX, ClipboardCheck, Clock, FlaskConical, Funnel, Gauge, GitMerge, ListChecks, ListRestart, MonitorCheck, Plus, RefreshCcw, Settings, SquarePen, Zap, Layers } from "lucide-react"
 
 import { Button } from "@/src/components/ui/shadcn/button"
 import { Checkbox } from "@/src/components/ui/shadcn/checkbox"
@@ -34,7 +34,7 @@ import {
     TableRow,
 } from "@/src/components/ui/shadcn/table"
 import { Update } from "@/src/generated/prisma/client"
-import { TestStatus, TestType } from "@/src/generated/prisma/enums"
+import { TestEnvironment, TestStatus, TestType } from "@/src/generated/prisma/enums"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
@@ -52,10 +52,10 @@ import {
 } from "@/src/components/ui/shadcn/sheet"
 import { Field, FieldGroup, FieldLabel, FieldSet } from "../ui/shadcn/field"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/shadcn/select"
-import { Textarea } from "../ui/shadcn/textarea"
 import { Prisma } from "@/src/generated/prisma/client"
 import UpdateTestButton from "../button/update-test-button"
 import DeleteTestButton from "../button/delete-test-button"
+import { Textarea } from "../ui/shadcn/textarea"
 
 export type TestWithRelations = Prisma.TestGetPayload<{
     include: {
@@ -83,14 +83,19 @@ function EditTestSheet({ test, projectId, updates, authorized }: {
 }) {
     const [open, setOpen] = React.useState(false)
     const [status, setStatus] = React.useState<TestStatus>(test.status)
+    const [environment, setEnvironment] = React.useState<TestEnvironment>(test.environment)
     const [type, setType] = React.useState<TestType>(test.type)
-    const [details, setDetails] = React.useState<string>(test.details ?? "")
+    const [name, setName] = React.useState<string>(test.name)
+    const [actions, setActions] = React.useState<string>(test.actions)
+    const [results, setResults] = React.useState<string>(test.results)
     const [updateId, setUpdateId] = React.useState<string>(test.updateId ?? "")
 
     React.useEffect(() => {
         setStatus(test.status)
         setType(test.type)
-        setDetails(test.details ?? "")
+        setName(test.name)
+        setActions(test.actions)
+        setResults(test.results)
         setUpdateId(test.updateId ?? "")
     }, [test])
 
@@ -112,32 +117,18 @@ function EditTestSheet({ test, projectId, updates, authorized }: {
                         e.preventDefault()
                     }
                 }}
+                className="h-screen overflow-y-auto"
             >
                 <SheetHeader>
                     <SheetTitle>Modifier le test</SheetTitle>
-                    <SheetDescription>{test.details}</SheetDescription>
+                    <SheetDescription>{test.name}</SheetDescription>
                 </SheetHeader>
 
                 <FieldSet className="mx-4">
                     <FieldGroup>
                         <Field>
-                            <FieldLabel htmlFor="statut">Statut</FieldLabel>
-                            <Select value={status} onValueChange={(v) => setStatus(v as TestStatus)}>
-                                <SelectTrigger id="statut" className="w-full">
-                                    <SelectValue placeholder="Statut du test" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        {Object.values(TestStatus).map((t) => {
-                                            const label =
-                                                t === TestStatus.PENDING ? "En attente" :
-                                                    t === TestStatus.FAILED ? "Échoué" :
-                                                        t === TestStatus.PASSED ? "Réussi" : t
-                                            return <SelectItem key={t} value={t}>{label}</SelectItem>
-                                        })}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+                            <FieldLabel htmlFor="nom">Nom</FieldLabel>
+                            <Input id="nom" value={name} onChange={(e) => setName(e.target.value)} />
                         </Field>
 
                         <Field>
@@ -150,10 +141,69 @@ function EditTestSheet({ test, projectId, updates, authorized }: {
                                     <SelectGroup>
                                         {Object.values(TestType).map((t) => {
                                             const label =
-                                                t === TestType.INTEGRATION ? "Intégration" :
-                                                    t === TestType.UNIT ? "Unitaire" :
-                                                        t === TestType.E2E ? "E2E" :
-                                                            t === TestType.OTHER ? "Autre" : t
+                                                t === TestType.ACCEPTANCE ? "Recette" :
+                                                    t === TestType.CONFIGURATION ? "Configuration" :
+                                                        t === TestType.E2E ? "End-to-End" :
+                                                            t === TestType.FUNCTIONAL ? "Fonctionnel" :
+                                                                t === TestType.INTEGRATION ? "Intégration" :
+                                                                    t === TestType.PERFORMANCE ? "Performance" :
+                                                                        t === TestType.REGRESSION ? "Régression" :
+                                                                            t === TestType.STRESS ? "Stress" :
+                                                                                t === TestType.UI ? "Interface utilisateur" :
+                                                                                    t === TestType.UNIT ? "Unitaire" :
+                                                                                        t === TestType.OTHER ? "Autre" :
+                                                                                            t
+                                            return <SelectItem key={t} value={t}>{label}</SelectItem>
+                                        })}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </Field>
+
+                        <Field>
+                            <FieldLabel htmlFor="actions">Actions réalisé</FieldLabel>
+                            <Textarea id="actions" value={actions} onChange={(e) => setActions(e.target.value)} />
+                        </Field>
+
+                        <Field>
+                            <FieldLabel htmlFor="results">Résultats obtenus</FieldLabel>
+                            <Textarea id="results" value={results} onChange={(e) => setResults(e.target.value)} />
+                        </Field>
+
+                        <Field>
+                            <FieldLabel htmlFor="statut">Environnement</FieldLabel>
+                            <Select value={environment} onValueChange={(v) => setEnvironment(v as TestEnvironment)}>
+                                <SelectTrigger id="environment" className="w-full">
+                                    <SelectValue placeholder="Environnement du test" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        {Object.values(TestEnvironment).map((t) => {
+                                            const label =
+                                                t === TestEnvironment.DEVELOPMENT ? "Développement" :
+                                                    t === TestEnvironment.STAGING ? "Staging" :
+                                                        t === TestEnvironment.PRODUCTION ? "Production" : t
+                                            return <SelectItem key={t} value={t}>{label}</SelectItem>
+                                        })}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </Field>
+
+                        <Field>
+                            <FieldLabel htmlFor="statut">Statut</FieldLabel>
+                            <Select value={status} onValueChange={(v) => setStatus(v as TestStatus)}>
+                                <SelectTrigger id="statut" className="w-full">
+                                    <SelectValue placeholder="Statut du test" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        {Object.values(TestStatus).map((t) => {
+                                            const label =
+                                                t === TestStatus.PENDING ? "En attente" :
+                                                    t === TestStatus.FAILED ? "Échoué" :
+                                                        t === TestStatus.PASSED ? "Réussi" :
+                                                            t === TestStatus.BLOCKED ? "Bloqué" : t
                                             return <SelectItem key={t} value={t}>{label}</SelectItem>
                                         })}
                                     </SelectGroup>
@@ -176,16 +226,6 @@ function EditTestSheet({ test, projectId, updates, authorized }: {
                                 </SelectContent>
                             </Select>
                         </Field>
-
-                        <Field>
-                            <FieldLabel htmlFor="details">Détails</FieldLabel>
-                            <Textarea
-                                id="details"
-                                value={details}
-                                onChange={(e) => setDetails(e.target.value)}
-                                className="w-full"
-                            />
-                        </Field>
                     </FieldGroup>
                 </FieldSet>
 
@@ -194,8 +234,8 @@ function EditTestSheet({ test, projectId, updates, authorized }: {
                         <Button variant="outline">Annuler</Button>
                     </SheetClose>
                     <div className="flex items-center gap-1">
-                        <UpdateTestButton projectId={projectId} type={type} statut={status} details={details} update={updates.find(u => u.id === updateId)} authorized={authorized} test={test} />
                         <DeleteTestButton projectId={projectId} authorized={authorized} test={test} />
+                        <UpdateTestButton projectId={projectId} name={name} type={type} statut={status} actions={actions} results={results} environment={environment} update={updates.find(u => u.id === updateId)} authorized={authorized} test={test} />
                     </div>
                 </SheetFooter>
             </SheetContent>
@@ -248,12 +288,36 @@ export function TestTable({ tests, projectId, updates, authorized }: {
             ),
             cell: ({ row }) => (
                 <div className="capitalize">
-                    {row.getValue("type") === TestType.UNIT ? <span className="flex items-center"><Box className="w-4 h-4 mr-1 text-gray-500" /> Unit</span> :
-                        row.getValue("type") === TestType.INTEGRATION ? <span className="flex items-center"><GitMerge className="w-4 h-4 mr-1 text-gray-500" /> Intégration</span> :
-                            row.getValue("type") === TestType.E2E ? <span className="flex items-center"><MonitorCheck className="w-4 h-4 mr-1 text-gray-500" /> E2E</span> :
-                                row.getValue("type") === TestType.OTHER ? <span className="flex items-center"><FlaskConical className="w-4 h-4 mr-1 text-gray-500" /> Autre</span> : ""}
+                    {row.getValue("type") === TestType.UNIT ? (
+                        <span className="flex items-center"><Box className="w-4 h-4 mr-1 text-gray-500" /> Unit</span>
+                    ) : row.getValue("type") === TestType.INTEGRATION ? (
+                        <span className="flex items-center"><GitMerge className="w-4 h-4 mr-1 text-gray-500" /> Intégration</span>
+                    ) : row.getValue("type") === TestType.FUNCTIONAL ? (
+                        <span className="flex items-center"><ListChecks className="w-4 h-4 mr-1 text-gray-500" /> Fonctionnel</span>
+                    ) : row.getValue("type") === TestType.ACCEPTANCE ? (
+                        <span className="flex items-center"><ClipboardCheck className="w-4 h-4 mr-1 text-gray-500" /> Recette</span>
+                    ) : row.getValue("type") === TestType.E2E ? (
+                        <span className="flex items-center"><MonitorCheck className="w-4 h-4 mr-1 text-gray-500" /> E2E</span>
+                    ) : row.getValue("type") === TestType.PERFORMANCE ? (
+                        <span className="flex items-center"><Gauge className="w-4 h-4 mr-1 text-gray-500" /> Performance</span>
+                    ) : row.getValue("type") === TestType.REGRESSION ? (
+                        <span className="flex items-center"><RefreshCcw className="w-4 h-4 mr-1 text-gray-500" /> Régression</span>
+                    ) : row.getValue("type") === TestType.STRESS ? (
+                        <span className="flex items-center"><Zap className="w-4 h-4 mr-1 text-gray-500" /> Stress</span>
+                    ) : row.getValue("type") === TestType.CONFIGURATION ? (
+                        <span className="flex items-center"><Settings className="w-4 h-4 mr-1 text-gray-500" /> Configuration</span>
+                    ) : row.getValue("type") === TestType.UI ? (
+                        <span className="flex items-center"><Layers className="w-4 h-4 mr-1 text-gray-500" /> Interface</span>
+                    ) : row.getValue("type") === TestType.OTHER ? (
+                        <span className="flex items-center"><FlaskConical className="w-4 h-4 mr-1 text-gray-500" /> Autre</span>
+                    ) : null}
                 </div>
             ),
+        },
+        {
+            accessorKey: "name",
+            header: () => <div>Nom</div>,
+            cell: ({ row }) => <div>{row.getValue("name")}</div>,
         },
         {
             accessorKey: "status",
@@ -309,11 +373,6 @@ export function TestTable({ tests, projectId, updates, authorized }: {
             },
         },
         {
-            accessorKey: "details",
-            header: () => <div>Détails</div>,
-            cell: ({ row }) => <div>{row.getValue("details")}</div>,
-        },
-        {
             id: "actions",
             enableHiding: false,
             cell: ({ row }) => (
@@ -360,9 +419,9 @@ export function TestTable({ tests, projectId, updates, authorized }: {
             <div className="flex items-center py-4">
                 <div className="flex gap-2">
                     <Input
-                        placeholder="Filtrer par détails..."
-                        value={(table.getColumn("details")?.getFilterValue() as string) ?? ""}
-                        onChange={(event) => table.getColumn("details")?.setFilterValue(event.target.value)}
+                        placeholder="Filtrer par nom..."
+                        value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                        onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
                         className="max-w-sm"
                     />
                     <DropdownMenu open={columnFiltersStatusOpen} onOpenChange={setColumnFiltersStatusOpen}>

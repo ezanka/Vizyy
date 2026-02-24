@@ -6,9 +6,9 @@ import { redirect } from "next/navigation";
 import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { updateTest } from "@/src/actions/update-test-actions";
-import { TestStatus, TestType } from "@/src/generated/prisma/enums"
+import { TestEnvironment, TestStatus, TestType } from "@/src/generated/prisma/enums"
 
-export default function UpdateTestButton({ projectId, type, statut, details, update, authorized, test }: { projectId: string, type: TestType, statut: TestStatus, details: string, update?: Update, authorized: boolean, test: { id: string } }) {
+export default function UpdateTestButton({ projectId, name, type, statut, actions, results, environment, update, authorized, test }: { projectId: string, name: string, type: TestType, statut: TestStatus, actions: string, results: string, environment: TestEnvironment, update?: Update, authorized: boolean, test: { id: string } }) {
 
     const [isLoading, setIsLoading] = React.useState(false);
 
@@ -25,7 +25,7 @@ export default function UpdateTestButton({ projectId, type, statut, details, upd
             setIsLoading(false);
             return;
         }
-        const result = updateTest(projectId, test.id, type, statut, details, update);
+        const result = updateTest(projectId, test.id, name, type, statut, actions, results, environment, update);
 
         if (!result) {
             alert("Une erreur est survenue lors de la mise à jour du test");

@@ -32,7 +32,7 @@ export default function DeleteTestButton({ projectId, authorized, test }: { proj
 
     return (
         <>
-            <Button disabled={!authorized || isLoading} type="button" onClick={handleDeleteTest}>{isLoading ? <Spinner /> : <Trash className="w-4 h-4" />}</Button>
+            <Button disabled={!authorized || isLoading} type="button" variant={"destructive"} onClick={handleDeleteTest}>{isLoading ? <Spinner /> : <Trash className="w-4 h-4" />}</Button>
         </>
     )
 }

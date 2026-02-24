@@ -4,10 +4,10 @@ import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
-import { TestType, TestStatus } from "@/src/generated/prisma/enums";
+import { TestType, TestStatus, TestEnvironment } from "@/src/generated/prisma/enums";
 import { Update } from "@/src/generated/prisma/client";
 
-export async function createTest(projectId: string, type: TestType, status: TestStatus, details: string, update: Update) {
+export async function createTest(projectId: string, name: string, actions: string, results: string, type: TestType, status: TestStatus, environment: TestEnvironment, update: Update) {
     const user = await getUser();
 
     if (!user) {
@@ -19,9 +19,17 @@ export async function createTest(projectId: string, type: TestType, status: Test
             id: randomUUID(),
             projectId,
             updateId: update?.id,
+
+            name,
+            actions,
+            results,
+
             type,
             status,
-            details,
+            environment,
+
+            isApproved: false,
+
             createdById: user.id,
             createdAt: new Date(),
             updatedAt: null,

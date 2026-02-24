@@ -27,8 +27,9 @@ import { UpdateType, UpdateStatus } from "@/src/generated/prisma/enums"
 import UpdateUpdateButton from "@/src/components/button/update-update-button"
 import React from "react"
 import Link from "next/link"
+import DeleteUpdateButton from "../button/delete-update-button"
 
-export default function EditUpdateForm({ project, update }: { project: Organization, update: Update }) {
+export default function EditUpdateForm({ project, update, authorized }: { project: Organization, update: Update, authorized: boolean }) {
 
     const [title, setTitle] = React.useState<string>(update.title)
     const [content, setContent] = React.useState<string>(update.content)
@@ -148,11 +149,7 @@ export default function EditUpdateForm({ project, update }: { project: Organizat
                 </FieldSet>
 
                 <div className="flex items-center justify-between">
-                    <Button variant={"outline"} asChild>
-                        <Link href={`/project/${project.id}/updates/${update.id}`}>
-                            Annuler
-                        </Link>
-                    </Button>
+                    <DeleteUpdateButton projectId={project.id} updateId={update.id} authorized={authorized} />
                     <UpdateUpdateButton
                         projectId={project.id}
                         updateId={update.id}

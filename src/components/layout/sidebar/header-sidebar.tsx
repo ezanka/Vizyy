@@ -13,12 +13,7 @@ import {
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 
-interface HeaderSidebarProps {
-    projects: { id: string; name: string; logo: string | null }[];
-    projectId: string;
-}
-
-export default async function HeaderSideBar({ projects, projectId }: HeaderSidebarProps) {
+export default async function HeaderSideBar({ projectId }: {projectId: string}) {
 
     const activeOrganization = await prisma.organization.findUnique({
         where: {
@@ -55,23 +50,6 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
                     </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="right" className="mt-2">
-                    <DropdownMenuGroup>
-                        {Object.values(projects).map((p) => {
-                            const Logo = p.logo && iconMap[p.logo] ? iconMap[p.logo] : Globe;
-
-                            return (
-                                <DropdownMenuItem key={p.id} asChild>
-                                    <Link href={`/project/${p.id}/dashboard`}>
-                                        <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                            <Logo className="inline-block h-4 w-4" />
-                                        </div>
-                                        {p.name}
-                                    </Link>
-                                </DropdownMenuItem>
-                            )
-                        })}
-                        <DropdownMenuSeparator />
-                    </DropdownMenuGroup>
                     <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
                             <Link href="/projects">

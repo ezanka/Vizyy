@@ -5,6 +5,8 @@ import { Card } from "@/src/components/ui/shadcn/card";
 import { prisma } from "@/src/lib/prisma"
 import { ArrowLeft } from "lucide-react";
 import Link from "next/dist/client/link";
+import { isMaker } from "@/src/actions/is-maker-actions";
+import { getUser } from "@/src/lib/auth-server";
 
 type Params = {
     projectId: string;
@@ -17,6 +19,7 @@ export default async function EditUpdatePage({
     params: Promise<Params>;
 }) {
     const { projectId, updateId } = await params;
+    const user = await getUser();
 
     const project = await prisma.organization.findUnique({
         where: { id: projectId },
@@ -40,6 +43,20 @@ export default async function EditUpdatePage({
         return <div>Update non trouvée</div>
     }
 
+    if (!user) {
+        return <div>Vous devez être connecté pour accéder à cette page</div>
+    }
+
+    const authorized = await prisma.update.findUnique({
+        where: {
+            id: updateId,
+            organizationId: projectId,
+            authorId: user.id
+        },
+    })
+
+    const userIsMaker = await isMaker(projectId);
+
     return (
         <div className="flex flex-col gap-6 my-4">
             <div className="flex items-center gap-4">
@@ -52,7 +69,7 @@ export default async function EditUpdatePage({
             </div>
 
             <Card className="w-full max-w-4xl mx-auto">
-                <EditUpdateForm project={project} update={update} />
+                <EditUpdateForm project={project} update={update} authorized={userIsMaker.isMaker || !!authorized} />
             </Card>
         </div>
 

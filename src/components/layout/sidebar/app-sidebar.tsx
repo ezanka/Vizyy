@@ -33,16 +33,6 @@ import FooterSidebar from "./footer-sidebar"
 export async function AppSidebar({ projectId }: { projectId: string }) {
     const user = await getUser()
 
-    const projects = await prisma.organization.findMany({
-        where: {
-            members: {
-                some: {
-                    userId: user?.id
-                }
-            }
-        }
-    })
-
     const userRole = await prisma.member.findFirst({
         where: {
             userId: user?.id,
@@ -131,7 +121,7 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
     return (
         <Sidebar className="border-none">
             <div className="border-none bg-background w-full flex flex-col h-full">
-                <HeaderSidebar projects={projects} projectId={projectId} />
+                <HeaderSidebar projectId={projectId} />
 
                 <SidebarContent>
                     <SidebarGroup>

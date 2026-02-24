@@ -5,6 +5,7 @@ import {
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
@@ -56,38 +57,42 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
                     </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="right" className="mt-2">
-                    <DropdownMenuItem asChild>
-                        <Link href="/projects">
-                            <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                <List className="inline-block h-4 w-4" />
-                            </div>
-                            <p>Tous les projets</p>
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                        <Link href="/project/new">
-                            <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                <Plus className="inline-block h-4 w-4" />
-                            </div>
-                            <p>Nouveau projet</p>
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    {projects.map((project) => {
-                        const LogoIcon = project.logo && iconMap[project.logo] ? iconMap[project.logo] : Globe;
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem asChild>
+                            <Link href="/projects">
+                                <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
+                                    <List className="inline-block h-4 w-4" />
+                                </div>
+                                <p>Tous les projets</p>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/project/new">
+                                <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
+                                    <Plus className="inline-block h-4 w-4" />
+                                </div>
+                                <p>Nouveau projet</p>
+                            </Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        {projects.map((project) => {
+                            const LogoIcon = project.logo && iconMap[project.logo] ? iconMap[project.logo] : Globe;
 
-                        return (
-                            <DropdownMenuItem key={project.id} asChild>
-                                <Link href={`/project/${project.id}/dashboard`}>
-                                    <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                        <LogoIcon className="inline-block h-4 w-4" />
-                                    </div>
-                                    {project.name}
-                                </Link>
-                            </DropdownMenuItem>
-                        )
-                    })}
+                            return (
+                                <DropdownMenuItem key={project.id} asChild>
+                                    <Link href={`/project/${project.id}/dashboard`}>
+                                        <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
+                                            <LogoIcon className="inline-block h-4 w-4" />
+                                        </div>
+                                        {project.name}
+                                    </Link>
+                                </DropdownMenuItem>
+                            )
+                        })}
+                    </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
         </SidebarHeader>

@@ -56,21 +56,6 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
                     </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="right" className="mt-2">
-                    {projects.map((project) => {
-                        const LogoIcon = project.logo && iconMap[project.logo] ? iconMap[project.logo] : Globe;
-
-                        return (
-                            <DropdownMenuItem key={project.id} asChild>
-                                <Link href={`/project/${project.id}/dashboard`}>
-                                    <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
-                                        <LogoIcon className="inline-block h-4 w-4" />
-                                    </div>
-                                    {project.name}
-                                </Link>
-                            </DropdownMenuItem>
-                        )
-                    })}
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                         <Link href="/projects">
                             <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
@@ -88,6 +73,21 @@ export default async function HeaderSideBar({ projects, projectId }: HeaderSideb
                             <p>Nouveau projet</p>
                         </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {projects.map((project) => {
+                        const LogoIcon = project.logo && iconMap[project.logo] ? iconMap[project.logo] : Globe;
+
+                        return (
+                            <DropdownMenuItem key={project.id} asChild>
+                                <Link href={`/project/${project.id}/dashboard`}>
+                                    <div className="border flex items-center justify-center rounded-sm w-6 h-6 mr-2">
+                                        <LogoIcon className="inline-block h-4 w-4" />
+                                    </div>
+                                    {project.name}
+                                </Link>
+                            </DropdownMenuItem>
+                        )
+                    })}
                 </DropdownMenuContent>
             </DropdownMenu>
         </SidebarHeader>

@@ -11,6 +11,7 @@ import {
 } from "@/src/components/ui/shadcn/dropdown-menu"
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
+import { unstable_noStore as noStore } from "next/cache"
 
 interface HeaderSidebarProps {
     projects: { id: string; name: string; logo: string | null }[];
@@ -18,6 +19,7 @@ interface HeaderSidebarProps {
 }
 
 export default async function HeaderSideBar({ projects, projectId }: HeaderSidebarProps) {
+    noStore();
 
     const activeOrganization = await prisma.organization.findUnique({
         where: {

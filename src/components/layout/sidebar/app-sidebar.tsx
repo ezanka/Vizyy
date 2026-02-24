@@ -126,7 +126,7 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
 
     const userInitial = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'
     const userName = user?.name || 'Utilisateur'
-    const userEmail = user?.email || 'user@codizy.com'
+    const userEmail = user?.email || 'user@wizyy.com'
 
     return (
         <Sidebar className="border-none">

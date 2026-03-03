@@ -16,7 +16,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { redirect } from "next/navigation";
 import ValidUpdateButton from "@/src/components/button/valid-update-button";
-import { MemberRole, UpdateStatus, UpdateType } from "@/src/generated/prisma/enums";
+import { MemberRole, UpdateStatus } from "@/src/generated/prisma/enums";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale/fr";
 import {
@@ -226,12 +226,6 @@ export default async function UpdatesPage({
                                                 </TooltipContent>
                                             )}
                                         </Tooltip>
-                                        {update.validatedAt && (
-                                            <>
-                                                <span className="text-muted-foreground/40">•</span>
-                                                <span>{format(new Date(update.validatedAt), "d MMM yyyy", { locale: fr })}</span>
-                                            </>
-                                        )}
                                     </div>
                                 ) : (
                                     <div className="flex items-center justify-between w-full">

@@ -17,6 +17,9 @@ export default async function TodosPage({
     const todos = await prisma.todo.findMany({
         where: {
             projectId: projectId,
+        },
+        include: {
+            assignee: true,
         }
     });
 

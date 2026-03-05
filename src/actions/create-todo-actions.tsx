@@ -26,6 +26,7 @@ export async function createTodo(projectId: string, title: string, description: 
             projectId,
             status,
             createdById: user.id,
+            updatedAt: null
         },
     });
 

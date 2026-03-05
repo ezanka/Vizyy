@@ -16,6 +16,7 @@ export async function updateTodoStatus(projectId: string, todoId: string, status
         where: { id: todoId },
         data: {
             status,
+            updatedAt: new Date()
         },
     });
 

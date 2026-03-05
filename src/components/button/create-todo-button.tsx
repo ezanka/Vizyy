@@ -12,7 +12,7 @@ export default function CreateTodoButton({ projectId, title, description, type, 
 
     const [isLoading, setIsLoading] = React.useState(false);
 
-    const handleCreateTodo = () => {
+    const handleCreateTodo = async () => {
         setIsLoading(true);
         if (!authorized) {
             alert("Vous n'êtes pas autorisé à créer un todo");

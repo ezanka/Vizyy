@@ -14,14 +14,13 @@ import {
     CalendarDays,
     Files,
     LinkIcon,
-    FilePlusCorner,
-    LayersPlus,
     Megaphone,
     Users,
     MessageCircleMore,
     UserRoundCog,
     Settings,
-    Bug
+    Bug,
+    ListTodo
 } from "lucide-react"
 import { getUser } from "@/src/lib/auth-server"
 import Link from "next/link"
@@ -76,24 +75,11 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
             url: `/timeline`,
             icon: CalendarDays,
         },
-    ]
-
-    const fastNav = [
         {
-            title: "Ajouter asset",
-            url: `/assets/new`,
-            icon: FilePlusCorner,
+            title: "Todos",
+            url: `/todos`,
+            icon: ListTodo,
         },
-        {
-            title: "Créer update",
-            url: `/update/new`,
-            icon: LayersPlus,
-        },
-        {
-            title: "Partager",
-            url: `/share`,
-            icon: LinkIcon,
-        }
     ]
 
     const gestionNav = [
@@ -111,7 +97,7 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
             title: "Liens",
             url: `/links`,
             icon: LinkIcon,
-        }
+        },
     ]
 
     const userInitial = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'
@@ -149,24 +135,6 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
                                 <SidebarGroupContent>
                                     <SidebarMenu>
                                         {gestionNav.map((item) => (
-                                            <SidebarMenuItem key={item.title}>
-                                                <SidebarMenuButton asChild className="hover:bg-card">
-                                                    <Link href={`/project/${projectId}/${item.url}`}>
-                                                        <item.icon />
-                                                        <span>{item.title}</span>
-                                                    </Link>
-                                                </SidebarMenuButton>
-                                            </SidebarMenuItem>
-                                        ))}
-                                    </SidebarMenu>
-                                </SidebarGroupContent>
-                            </SidebarGroup>
-
-                            <SidebarGroup>
-                                <SidebarGroupLabel>Actions rapides</SidebarGroupLabel>
-                                <SidebarGroupContent>
-                                    <SidebarMenu>
-                                        {fastNav.map((item) => (
                                             <SidebarMenuItem key={item.title}>
                                                 <SidebarMenuButton asChild className="hover:bg-card">
                                                     <Link href={`/project/${projectId}/${item.url}`}>

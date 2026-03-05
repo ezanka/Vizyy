@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
+    "@dnd-kit/abstract": "^0.3.2",
+    "@dnd-kit/helpers": "^0.3.2",
+    "@dnd-kit/react": "^0.3.2",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@prisma/extension-accelerate": "^3.0.1",

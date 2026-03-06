@@ -2,6 +2,7 @@
 
 import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
+import { revalidatePath } from "next/cache";
 import type { TodoStatus } from "@/src/generated/prisma/enums";
 
 export async function updateTodoStatus(projectId: string, todoId: string, status: TodoStatus) {
@@ -19,5 +20,6 @@ export async function updateTodoStatus(projectId: string, todoId: string, status
         },
     });
 
+    revalidatePath(`/project/${projectId}/todos`);
     return { success: true };
 }

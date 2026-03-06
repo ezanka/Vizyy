@@ -218,7 +218,7 @@ export default function EditTodoForm({
                                     <div className="flex items-center gap-1 px-3 py-2 border-t border-border/60 bg-muted/30">
                                         <Calendar className="size-2.5 text-muted-foreground/70" />
                                         <span className="text-[10px] text-muted-foreground/70">
-                                            {format(new Date(t.createdAt), "dd MMM yyyy", { locale: fr })}
+                                            {format(new Date(t.createdAt), "dd MMM yyyy HH:mm", { locale: fr })}
                                         </span>
                                     </div>
                                 </div>

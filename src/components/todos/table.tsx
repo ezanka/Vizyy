@@ -17,8 +17,7 @@ type TodoWithAssignee = Prisma.TodoGetPayload<{ include: { assignee: true } }>;
 
 const PRIORITY_ORDER = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
 
-const sortByPriority = (todos: TodoWithAssignee[]) =>
-    [...todos].sort((a, b) => (PRIORITY_ORDER[a.priority as keyof typeof PRIORITY_ORDER] ?? 99) - (PRIORITY_ORDER[b.priority as keyof typeof PRIORITY_ORDER] ?? 99));
+const sortByPriority = (todos: TodoWithAssignee[]) => [...todos].sort((a, b) => (PRIORITY_ORDER[a.priority as keyof typeof PRIORITY_ORDER] ?? 99) - (PRIORITY_ORDER[b.priority as keyof typeof PRIORITY_ORDER] ?? 99));
 
 const COLUMNS: Record<string, { label: string; accent: string }> = {
     [TodoStatus.TODO]: { label: 'À faire', accent: 'bg-blue-500' },
@@ -71,12 +70,17 @@ export default function TodosTable({ projectId, todos, authorized }: { projectId
                 onDragOver={(event) => {
                     setItems((items) => move(items, event));
                 }}
-                onDragEnd={async (event) => {
+                onDragEnd={(event) => {
+                    setItems((items) => move(items, event));
+
                     const { source, target } = event.operation;
                     if (source && target) {
                         const todoId = source.id as string;
-                        const column = (target.id as string).includes(Object.keys(COLUMNS).join('|')) ? target.id as string : (target as unknown as { group: string }).group;
-                        await updateTodoStatus(projectId, todoId, column as TodoStatus);
+                        const column = (target.id as string).includes(Object.keys(COLUMNS).join('|'))
+                            ? target.id as string
+                            : (target as unknown as { group: string }).group;
+
+                        updateTodoStatus(projectId, todoId, column as TodoStatus);
                     }
                 }}
             >

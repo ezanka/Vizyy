@@ -87,13 +87,13 @@ export function Item({ projectId, todo, index, column, authorized }: { projectId
                 </div>
                 <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/70 shrink-0">
                     <Calendar className="size-2.5" />
-                    {format(todo.createdAt, 'd MMM yyyy', { locale: fr })}
+                    {format(todo.createdAt, 'd MMM yyyy HH:mm', { locale: fr })}
                 </span>
                 {
                     todo.updatedAt && todo.updatedAt > todo.createdAt && (
                         <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/70 shrink-0">
                             <CalendarCog className="size-2.5" />
-                            {format(todo.updatedAt, 'd MMM yyyy', { locale: fr })}
+                            {format(todo.updatedAt, 'd MMM yyyy HH:mm', { locale: fr })}
                         </span>
                     )
                 }

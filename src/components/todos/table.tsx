@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { DragDropProvider } from '@dnd-kit/react';
 import { move } from '@dnd-kit/helpers';
 import { ListPlus, Plus } from 'lucide-react';
@@ -25,6 +25,9 @@ const COLUMNS: Record<string, { label: string; accent: string }> = {
     [TodoStatus.DONE]: { label: 'Terminé', accent: 'bg-green-500' },
 };
 
+type ItemsState = { [TodoStatus.TODO]: string[]; [TodoStatus.IN_PROGRESS]: string[]; [TodoStatus.DONE]: string[] };
+type PendingUpdate = { todoId: string; column: TodoStatus; snapshot: ItemsState };
+
 export default function TodosTable({ projectId, todos, authorized }: { projectId: string; todos: TodoWithAssignee[]; authorized?: boolean }) {
 
     const [items, setItems] = useState({
@@ -32,6 +35,17 @@ export default function TodosTable({ projectId, todos, authorized }: { projectId
         [TodoStatus.IN_PROGRESS]: sortByPriority(todos.filter(todo => todo.status === TodoStatus.IN_PROGRESS)).map(todo => todo.id),
         [TodoStatus.DONE]: sortByPriority(todos.filter(todo => todo.status === TodoStatus.DONE)).map(todo => todo.id),
     });
+
+    const [pendingUpdate, setPendingUpdate] = useState<PendingUpdate | null>(null);
+    const dragStartItemsRef = useRef(items);
+
+    useEffect(() => {
+        if (!pendingUpdate) return;
+        const { todoId, column, snapshot } = pendingUpdate;
+        setPendingUpdate(null);
+        updateTodoStatus(projectId, todoId, column)
+            .catch(() => setItems(snapshot));
+    }, [pendingUpdate]);
 
     const total = Object.values(items).flat().length;
 
@@ -67,20 +81,24 @@ export default function TodosTable({ projectId, todos, authorized }: { projectId
                 )}
             </div>
             <DragDropProvider
+                onDragStart={() => {
+                    dragStartItemsRef.current = items;
+                }}
                 onDragOver={(event) => {
                     setItems((items) => move(items, event));
                 }}
                 onDragEnd={(event) => {
-                    setItems((items) => move(items, event));
+                    const { source } = event.operation;
+                    setItems((currentItems) => move(currentItems, event));
 
-                    const { source, target } = event.operation;
-                    if (source && target) {
+                    if (source) {
                         const todoId = source.id as string;
-                        const column = (target.id as string).includes(Object.keys(COLUMNS).join('|'))
-                            ? target.id as string
-                            : (target as unknown as { group: string }).group;
-
-                        updateTodoStatus(projectId, todoId, column as TodoStatus);
+                        const column = (Object.keys(items) as Array<keyof typeof items>).find(col =>
+                            items[col].includes(todoId)
+                        );
+                        if (column) {
+                            setPendingUpdate({ todoId, column: column as TodoStatus, snapshot: dragStartItemsRef.current as ItemsState });
+                        }
                     }
                 }}
             >

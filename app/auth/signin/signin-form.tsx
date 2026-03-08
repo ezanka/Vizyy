@@ -17,6 +17,7 @@ import { Github } from "lucide-react"
 import React from "react"
 import { useRouter } from "next/navigation"
 import { Spinner } from "@/src/components/ui/shadcn/spinner"
+import { toast } from "sonner"
 
 const signInWithGitHub = async () => {
     await authClient.signIn.social({
@@ -39,14 +40,25 @@ export function SignInForm({
         setIsLoading(true);
 
         try {
-            await authClient.signIn.email({
+            const { data, error } = await authClient.signIn.email({
                 email,
                 password,
             });
 
+            if (error?.message === "Invalid email or password") {
+                toast.error("Email ou mot de passe invalides.")
+                setIsLoading(false);
+                return
+            } else if (error) {
+                toast.error("Une erreur est survenue lors de la connexion")
+                setIsLoading(false);
+                return
+            }
+
             router.push(callbackUrl || "/projects");
         } catch (error) {
             console.error("Erreur de connexion:", error);
+            toast.error("Une erreur est survenue lors de la connexion")
         } finally {
             setIsLoading(false);
         }

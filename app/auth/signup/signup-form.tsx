@@ -16,6 +16,7 @@ import Link from "next/link"
 import { Github } from "lucide-react"
 import { useState } from "react"
 import { Spinner } from "@/src/components/ui/shadcn/spinner"
+import { toast } from "sonner"
 
 const signUpWithGitHub = async () => {
     await authClient.signIn.social({
@@ -43,26 +44,30 @@ export function SignUpForm({
         e.preventDefault()
         setIsLoading(true);
         if (formData.password !== formData.confirmPassword) {
-            alert("Les mots de passe ne correspondent pas")
+            toast.error("Les mots de passe ne correspondent pas")
             setIsLoading(false);
             return
         }
         if (formData.password.length < 8) {
-            alert("Le mot de passe doit contenir au moins 8 caractères")
+            toast.error("Le mot de passe doit contenir au moins 8 caractères")
             setIsLoading(false);
             return
         }
 
         try {
-            const { data, error } = await authClient.signUp.email({
+            const { error } = await authClient.signUp.email({
                 email: formData.email,
                 password: formData.password,
                 name: formData.name,
                 callbackURL: "/projects",
             })
 
-            if (error) {
-                alert(error.message || "Erreur lors de l'inscription")
+            if (error && error.message === "User already exists. Use another email.") {
+                toast.error("Un utilisateur avec cet email existe déjà.")
+                setIsLoading(false);
+                return
+            } else if (error) {
+                toast.error("Erreur lors de l'inscription")
                 setIsLoading(false);
                 return
             }
@@ -72,7 +77,7 @@ export function SignUpForm({
             window.location.href = "/projects"
         } catch (err) {
             console.error("Erreur d'inscription:", err)
-            alert("Une erreur est survenue lors de l'inscription")
+            toast.error("Une erreur est survenue lors de l'inscription")
             setIsLoading(false);
         }
     }

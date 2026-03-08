@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Montserrat } from 'next/font/google'
 import "./globals.css";
+import { Toaster } from "@/src/components/ui/shadcn/sonner";
 
 const poppins = Poppins({
     subsets: ['latin'],
@@ -28,6 +29,7 @@ export default function RootLayout({
         <html lang="fr" className={montserrat.variable}>
             <body className={`${montserrat.className} bg-background text-foreground`}>
                 {children}
+                <Toaster position="top-center" />
             </body>
         </html>
     );

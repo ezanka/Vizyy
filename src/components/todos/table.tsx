@@ -17,7 +17,11 @@ type TodoWithAssignee = Prisma.TodoGetPayload<{ include: { assignee: true } }>;
 
 const PRIORITY_ORDER = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
 
-const sortByPriority = (todos: TodoWithAssignee[]) => [...todos].sort((a, b) => (PRIORITY_ORDER[a.priority as keyof typeof PRIORITY_ORDER] ?? 99) - (PRIORITY_ORDER[b.priority as keyof typeof PRIORITY_ORDER] ?? 99));
+const sortByPriority = (todos: TodoWithAssignee[]) =>
+    [...todos].sort((a, b) =>
+        (PRIORITY_ORDER[a.priority as keyof typeof PRIORITY_ORDER] ?? 99) -
+        (PRIORITY_ORDER[b.priority as keyof typeof PRIORITY_ORDER] ?? 99)
+    );
 
 const COLUMNS: Record<string, { label: string; accent: string }> = {
     [TodoStatus.TODO]: { label: 'À faire', accent: 'bg-blue-500' },
@@ -28,12 +32,19 @@ const COLUMNS: Record<string, { label: string; accent: string }> = {
 type ItemsState = { [TodoStatus.TODO]: string[]; [TodoStatus.IN_PROGRESS]: string[]; [TodoStatus.DONE]: string[] };
 type PendingUpdate = { todoId: string; column: TodoStatus; snapshot: ItemsState };
 
-export default function TodosTable({ projectId, todos, authorized }: { projectId: string; todos: TodoWithAssignee[]; authorized?: boolean }) {
-
+export default function TodosTable({
+    projectId,
+    todos,
+    authorized,
+}: {
+    projectId: string;
+    todos: TodoWithAssignee[];
+    authorized?: boolean;
+}) {
     const [items, setItems] = useState({
-        [TodoStatus.TODO]: sortByPriority(todos.filter(todo => todo.status === TodoStatus.TODO)).map(todo => todo.id),
-        [TodoStatus.IN_PROGRESS]: sortByPriority(todos.filter(todo => todo.status === TodoStatus.IN_PROGRESS)).map(todo => todo.id),
-        [TodoStatus.DONE]: sortByPriority(todos.filter(todo => todo.status === TodoStatus.DONE)).map(todo => todo.id),
+        [TodoStatus.TODO]:        sortByPriority(todos.filter(t => t.status === TodoStatus.TODO)).map(t => t.id),
+        [TodoStatus.IN_PROGRESS]: sortByPriority(todos.filter(t => t.status === TodoStatus.IN_PROGRESS)).map(t => t.id),
+        [TodoStatus.DONE]:        sortByPriority(todos.filter(t => t.status === TodoStatus.DONE)).map(t => t.id),
     });
 
     const [pendingUpdate, setPendingUpdate] = useState<PendingUpdate | null>(null);
@@ -43,54 +54,53 @@ export default function TodosTable({ projectId, todos, authorized }: { projectId
         if (!pendingUpdate) return;
         const { todoId, column, snapshot } = pendingUpdate;
         setPendingUpdate(null);
-        updateTodoStatus(projectId, todoId, column)
-            .catch(() => setItems(snapshot));
+        updateTodoStatus(projectId, todoId, column).catch(() => setItems(snapshot));
     }, [pendingUpdate]);
 
     const total = Object.values(items).flat().length;
 
     return (
-        <div className="my-4 flex flex-col gap-4 min-h-fit h-full">
+        <div className="flex flex-col gap-6 min-h-fit h-full">
+
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold">Todos</h1>
-                    <p className="text-sm text-muted-foreground">{total} tâche{total !== 1 ? 's' : ''}</p>
+                <div className="flex flex-col gap-0.5">
+                    <h1 className="text-2xl font-extrabold tracking-tight">Todos</h1>
+                    <p className="text-[11px] text-foreground-subtle">
+                        {total} tâche{total !== 1 ? 's' : ''}
+                    </p>
                 </div>
+
                 {authorized ? (
                     <ButtonGroup>
-                        <Button size="sm" variant="outline" asChild>
-                            <Link href={`/project/${projectId}/todos/proposals`} className="flex items-center gap-1">
-                                <ListPlus className="size-4" />
+                        <Button size="sm" variant="outline" asChild className="gap-1.5 border-border-md hover:border-border-hi">
+                            <Link href={`/project/${projectId}/todos/proposals`}>
+                                <ListPlus size={13} />
                                 Propositions client
                             </Link>
                         </Button>
-                        <Button size="sm" asChild>
-                            <Link href={`/project/${projectId}/todos/new`} className="flex items-center gap-1">
-                                <Plus className="size-4" />
+                        <Button size="sm" asChild className="gap-1.5">
+                            <Link href={`/project/${projectId}/todos/new`}>
+                                <Plus size={13} />
                                 Ajouter
                             </Link>
                         </Button>
                     </ButtonGroup>
                 ) : (
-                    <Button size="sm" asChild>
-                        <Link href={`/project/${projectId}/todos/proposals/new`} className="flex items-center gap-1">
-                            <Plus className="size-4" />
+                    <Button size="sm" asChild className="gap-1.5">
+                        <Link href={`/project/${projectId}/todos/proposals/new`}>
+                            <Plus size={13} />
                             Faire une proposition
                         </Link>
                     </Button>
                 )}
             </div>
+
             <DragDropProvider
-                onDragStart={() => {
-                    dragStartItemsRef.current = items;
-                }}
-                onDragOver={(event) => {
-                    setItems((items) => move(items, event));
-                }}
+                onDragStart={() => { dragStartItemsRef.current = items; }}
+                onDragOver={(event) => { setItems((items) => move(items, event)); }}
                 onDragEnd={(event) => {
                     const { source } = event.operation;
                     setItems((currentItems) => move(currentItems, event));
-
                     if (source) {
                         const todoId = source.id as string;
                         const column = (Object.keys(items) as Array<keyof typeof items>).find(col =>
@@ -102,18 +112,20 @@ export default function TodosTable({ projectId, todos, authorized }: { projectId
                     }
                 }}
             >
-                <div className="flex flex-1 gap-4 min-h-0">
+                <div className="flex flex-1 gap-3 min-h-0">
                     {Object.entries(items).map(([column, columnItems]) => (
                         <Column
                             key={column}
                             id={column}
-                            label={COLUMNS[column as string].label}
+                            label={COLUMNS[column].label}
                             count={columnItems.length}
                             accent={COLUMNS[column as string].accent}
                         >
                             {columnItems.map((id, index) => {
-                                const todo = todos.find((todo) => todo.id === id);
-                                return todo ? <Item key={id} projectId={projectId} todo={todo as TodoWithAssignee} index={index} column={column} authorized={authorized} /> : null;
+                                const todo = todos.find(t => t.id === id);
+                                return todo
+                                    ? <Item key={id} projectId={projectId} todo={todo as TodoWithAssignee} index={index} column={column} authorized={authorized} />
+                                    : null;
                             })}
                         </Column>
                     ))}

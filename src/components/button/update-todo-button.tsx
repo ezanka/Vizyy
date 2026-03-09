@@ -7,6 +7,7 @@ import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { TodoType, TodoStatus, TodoPriority } from "@/src/generated/prisma/enums"
 import { updateTodo } from "@/src/actions/update-todo-actions";
+import { Edit } from "lucide-react";
 
 export default function UpdateTodoButton({ projectId, todoId, title, description, type, status, priority, assignedTo, update, tasks, authorized }: { projectId: string, todoId: string, title: string, description: string, type: TodoType, status: TodoStatus, priority: TodoPriority, assignedTo?: User, update?: Update, tasks: Task[], authorized: boolean }) {
 
@@ -45,7 +46,7 @@ export default function UpdateTodoButton({ projectId, todoId, title, description
 
     return (
         <>
-            <Button disabled={!title || !description || !authorized || isLoading} type="button" onClick={handleUpdateTodo}>{isLoading ? <><Spinner /> Mise à jour en cours</> : "Mettre à jour la todo"}</Button>
+            <Button disabled={!title || !description || !authorized || isLoading} type="button" onClick={handleUpdateTodo}>{isLoading ? <><Spinner /> Mise à jour en cours</> : <><Edit /> Mettre à jour la todo</>}</Button>
         </>
     )
 }

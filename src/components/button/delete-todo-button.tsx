@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { deleteTodo } from "@/src/actions/delete-todo-actions";
+import { Trash } from "lucide-react";
 
 export default function DeleteTodoButton({ projectId, todoId, authorized }: { projectId: string, todoId: string, authorized: boolean }) {
 
@@ -31,7 +32,7 @@ export default function DeleteTodoButton({ projectId, todoId, authorized }: { pr
 
     return (
         <>
-            <Button disabled={!authorized || isLoading} type="button" variant={"destructive"} onClick={handleDeleteTodo}>{isLoading ? <><Spinner /> Suppression en cours</> : "Supprimer la todo"}</Button>
+            <Button disabled={!authorized || isLoading} type="button" variant={"destructive"} onClick={handleDeleteTodo}>{isLoading ? <><Spinner /> Suppression en cours</> : <><Trash /> Supprimer la todo</>}</Button>
         </>
     )
 }

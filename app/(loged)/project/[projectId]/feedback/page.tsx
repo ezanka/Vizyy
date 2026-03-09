@@ -42,7 +42,7 @@ export default async function FeedbackPage({
     ]);
 
     return (
-        <div className="flex flex-col gap-4 my-4 justify-between flex-1">
+        <div className="flex flex-col gap-4 my-4 justify-between flex-1 h-full">
             <Feedback
                 projectId={projectId}
                 updates={updates}

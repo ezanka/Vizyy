@@ -110,7 +110,7 @@ export default async function UpdatesPage({
                 )}
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 mb-4">
                 {updates.map((update) => {
                     const authorName = getUserName(update.authorId, update.organization.members);
                     const updaterName = getUserName(update.updaterId, update.organization.members);

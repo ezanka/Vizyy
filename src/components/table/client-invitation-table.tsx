@@ -160,7 +160,7 @@ export function ClientInvitationTable({ invitations, projectId }: { invitations?
             <div className="flex items-center py-4">
                 <h1>Invitations</h1>
             </div>
-            <div className="overflow-hidden rounded-md border">
+            <div className="overflow-hidden rounded-md border bg-background">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

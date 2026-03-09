@@ -486,7 +486,7 @@ export function TestTable({ tests, projectId, updates, authorized }: {
                 </ButtonGroup>
             </div>
 
-            <div className="overflow-hidden rounded-md border">
+            <div className="overflow-hidden rounded-md border bg-background">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

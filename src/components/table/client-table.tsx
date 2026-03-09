@@ -280,7 +280,7 @@ export function ClientTable({ clients, isMaker, projectId }: { clients?: User[],
                 </ButtonGroup>
 
             </div>
-            <div className="overflow-hidden rounded-md border">
+            <div className="overflow-hidden rounded-md border bg-background">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

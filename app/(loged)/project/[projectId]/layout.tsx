@@ -64,7 +64,7 @@ export default async function Layout({
                         <div className="absolute -top-48 -right-32 w-150 h-150 rounded-full opacity-[0.08] blur-[80px] bg-primary" />
                         <div className="absolute bottom-1/4 -left-24 w-96 h-96 rounded-full opacity-[0.05] blur-[80px] bg-cyan" />
                     </div>
-                    <div className="z-10">
+                    <div className="z-1 flex-1 h-full w-full py-4 mb-4">
                         {children}
                     </div>
                 </div>

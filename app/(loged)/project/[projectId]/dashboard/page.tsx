@@ -89,12 +89,24 @@ export default async function DashboardPage({
                     <CardContent>
                         <p className="text-[1.8rem] font-black tracking-[-0.03em] leading-none">{format(new Date(projectInfo?.deadline || ""), "d MMM")}</p>
                         <p className="text-[11.5px] text-foreground-subtle mt-2 flex items-center gap-2">
-                            {differenceInDays(new Date(projectInfo?.deadline || ""), new Date())} jours restants
+
                             {differenceInDays(new Date(projectInfo?.deadline || ""), new Date()) > 7 ? (
-                                <Badge className="bg-success-bg text-success border-success-border text-[9.5px]">✓ En avance</Badge>
+                                <>
+                                    {differenceInDays(new Date(projectInfo?.deadline || ""), new Date())} jours restants
+                                    <Badge className="bg-success-bg text-success border-success-border text-[9.5px]">✓ En avance</Badge>
+                                </>
                             ) : differenceInDays(new Date(projectInfo?.deadline || ""), new Date()) > 0 ? (
-                                <Badge className="bg-warning-bg text-warning border-warning-border text-[9.5px]">✓ Presque atteint</Badge>
-                            ) : <Badge className="bg-destructive-bg text-destructive border-destructive-border text-[9.5px]">✓ En retard</Badge>}
+                                <>
+                                    {differenceInDays(new Date(projectInfo?.deadline || ""), new Date())} jours restants
+                                    <Badge className="bg-warning-bg text-warning border-warning-border text-[9.5px]">✓ Presque atteint</Badge>
+                                </>
+                            ) : (
+                                <>
+                                    En retard de {differenceInDays(new Date(projectInfo?.deadline || ""), new Date())} jours
+                                    <Badge className="bg-destructive-bg text-destructive border-destructive-border text-[9.5px]">✓ En retard</Badge>
+                                </>
+
+                            )}
                         </p>
                     </CardContent>
                 </Card>

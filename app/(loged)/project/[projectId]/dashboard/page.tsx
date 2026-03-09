@@ -1,13 +1,15 @@
 import { Button } from "@/src/components/ui/shadcn/button"
-import { Card, CardContent, CardHeader } from "@/src/components/ui/shadcn/card"
+import { Card, CardContent, CardDescription, CardHeader } from "@/src/components/ui/shadcn/card"
 import { Progress } from "@/src/components/ui/shadcn/progress"
 import { MemberRole, UpdateStatus, UpdateType } from "@/src/generated/prisma/enums"
 import { prisma } from "@/src/lib/prisma"
-import { ArrowRight, BugOff, ClockAlert, Flag, Gauge, HardDriveDownload, ListPlus, MailWarning, MessageCircleWarning, Paintbrush, Plus } from "lucide-react"
+import { ArrowRight, BugOff, Calendar, CalendarDays, ClockAlert, Flag, Gauge, HardDriveDownload, ListPlus, MailWarning, MessageCircleWarning, MessageSquare, Paintbrush, Plus } from "lucide-react"
 import Link from "next/link"
-import { format } from "date-fns"
+import { differenceInDays, format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { isMaker } from "@/src/actions/is-maker-actions"
+import { GradientText } from "@/src/components/ui/gradient-text"
+import { Badge } from "@/src/components/ui/shadcn/badge"
 
 type Params = {
     projectId: string;
@@ -43,51 +45,84 @@ export default async function DashboardPage({
                 {authorized && <Button asChild><Link href={`/project/${projectId}/updates/new`}><Plus /> Nouvelle update</Link></Button>}
             </div>
             <div className="grid grid-cols-4 gap-4 mb-4">
-                <Card className="border bg-background rounded-md flex flex-col justify-between">
-                    <CardHeader className="flex items-center justify-between">
-                        <p className="text-xs ">Updates</p>
-                        <MailWarning className="h-4 w-4 text-muted-foreground" />
+                <Card className="border-border bg-card group hover:border-border-hi hover:shadow-2xl transition-all overflow-hidden relative">
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" style={{ background: "radial-gradient(ellipse at top left, var(--primary-ghost), transparent 60%)" }} />
+                    <CardHeader className="pb-2">
+                        <div className="flex items-start justify-between">
+                            <CardDescription className="text-[10.5px] font-bold tracking-windest uppercase">Updates publiées</CardDescription>
+                            <div className="size-9 rounded-[6px] grid place-items-center border border-border-md bg-popover text-foreground-muted">
+                                <MessageSquare size={16} />
+                            </div>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-lg font-bold">{projectInfo?.updates.filter((f) => f.status !== UpdateStatus.DRAFT).length || 0}</p>
-                        <p className="text-xs text-muted-foreground">Dernière update posté le {projectInfo?.updates.filter((f) => f.status !== UpdateStatus.DRAFT)[0] ? format(new Date(projectInfo.updates.filter((f) => f.status !== UpdateStatus.DRAFT)[0].createdAt), "P", { locale: fr }) : "N/A"}</p>
+                        <GradientText className="text-[2rem] font-black tracking-[-0.05em] leading-none">{projectInfo?.updates.filter((f) => f.status !== UpdateStatus.DRAFT).length || 0}</GradientText>
+                        <p className="text-[11.5px] text-foreground-subtle mt-2 flex items-center gap-2">
+                            Dernière le {format(new Date(projectInfo?.updates[0]?.createdAt || ""), "Pp", { locale: fr })}
+                            <Badge className="bg-success-bg text-success border-success-border text-[9.5px]">↑ +3</Badge>
+                        </p>
                     </CardContent>
                 </Card>
-                <Card className="border bg-background rounded-md flex flex-col justify-between">
-                    <CardHeader className="flex items-center justify-between">
-                        <p className="text-xs ">Feedbacks en attente</p>
-                        <MessageCircleWarning className="h-4 w-4 text-muted-foreground" />
+                <Card className="border-border bg-card group hover:border-border-hi hover:shadow-2xl transition-all flex justify-between">
+                    <CardHeader className="pb-2">
+                        <div className="flex items-start justify-between">
+                            <CardDescription className="text-[10.5px] font-bold tracking-windest uppercase">Tests</CardDescription>
+                            <Badge className="bg-success-bg text-success border-success-border text-[10px]">6 / 8</Badge>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-lg font-bold">3</p>
-                        <p className="text-xs text-muted-foreground">13/16 feedbacks terminées</p>
+                        <p className="text-[2rem] font-black tracking-[-0.05em] leading-none">
+                            75<span className="text-[1.1rem] font-medium text-foreground-subtle">%</span>
+                        </p>
+                        <p className="text-[11.5px] text-foreground-subtle mt-2">6 réussis · 2 en attente</p>
                     </CardContent>
                 </Card>
-                <Card className="border bg-background rounded-md flex flex-col justify-between">
-                    <CardHeader className="flex items-center justify-between">
-                        <p className="text-xs ">Deadline</p>
-                        <ClockAlert className="h-4 w-4 text-muted-foreground" />
+                <Card className="border-border bg-card group hover:border-border-hi hover:shadow-2xl transition-all overflow-hidden relative">
+                    <CardHeader className="pb-2">
+                        <div className="flex items-start justify-between">
+                            <CardDescription className="text-[10.5px] font-bold tracking-windest uppercase">Deadline</CardDescription>
+                            <div className="size-9 rounded-[6px] grid place-items-center border border-border-md bg-popover text-foreground-muted">
+                                <CalendarDays size={16} />
+                            </div>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-lg font-bold">{projectInfo?.deadline ? format(new Date(projectInfo.deadline), "P", { locale: fr }) : "Aucune deadline"}</p>
-                        <p className="text-xs text-muted-foreground">Commencé le {format(new Date(projectInfo?.createdAt || ""), "P", { locale: fr })}</p>
+                        <p className="text-[1.8rem] font-black tracking-[-0.03em] leading-none">{format(new Date(projectInfo?.deadline || ""), "d MMM")}</p>
+                        <p className="text-[11.5px] text-foreground-subtle mt-2 flex items-center gap-2">
+                            {differenceInDays(new Date(projectInfo?.deadline || ""), new Date())} jours restants
+                            {differenceInDays(new Date(projectInfo?.deadline || ""), new Date()) > 7 ? (
+                                <Badge className="bg-success-bg text-success border-success-border text-[9.5px]">✓ En avance</Badge>
+                            ) : differenceInDays(new Date(projectInfo?.deadline || ""), new Date()) > 0 ? (
+                                <Badge className="bg-warning-bg text-warning border-warning-border text-[9.5px]">✓ Presque atteint</Badge>
+                            ) : <Badge className="bg-destructive-bg text-destructive border-destructive-border text-[9.5px]">✓ En retard</Badge>}
+                        </p>
                     </CardContent>
                 </Card>
-                <Card className="border bg-background rounded-md flex flex-col justify-between">
-                    <CardHeader className="flex items-center justify-between">
-                        <p className="text-xs ">Progression</p>
-                        <Gauge className="h-4 w-4 text-muted-foreground" />
+                <Card className="border-border bg-card group hover:border-border-hi hover:shadow-2xl transition-all">
+                    <CardHeader className="pb-2">
+                        <div className="flex items-start justify-between">
+                            <CardDescription className="text-[10.5px] font-bold tracking-windest uppercase">Progression</CardDescription>
+                            <Badge variant="outline" className="text-[10px]">{projectInfo?.progress || 0}%</Badge>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-lg font-bold">{projectInfo?.progress || 0}%</p>
-                        <Progress value={projectInfo?.progress || 0} className="mt-2" />
+                        <p className="text-[2rem] font-black tracking-[-0.05em] leading-none mb-3">
+                            {projectInfo?.progress || 0}<span className="text-[1.1rem] font-medium text-foreground-subtle">%</span>
+                        </p>
+                        <Progress value={projectInfo?.progress || 0} className="h-1.5" />
+                        <p className="text-[11.5px] text-foreground-subtle mt-2">Avancement global estimé</p>
                     </CardContent>
                 </Card>
             </div>
-            <div className="mb-4">
+            <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold mb-2">Clients</h3>
-                    <Link href={`/project/${projectId}/clients`} className="flex items-center gap-2 hover:underline">Tous <ArrowRight className="w-4 h-4" /></Link>
+                    <h3 className="text-[15px] font-bold tracking-tight">Clients</h3>
+                    <Link
+                        href={`/project/${projectId}/clients`}
+                        className="flex items-center gap-1.5 text-[11px] text-foreground-subtle hover:text-primary-light transition-colors"
+                    >
+                        Tous <ArrowRight size={11} />
+                    </Link>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                     {
@@ -101,15 +136,18 @@ export default async function DashboardPage({
                             });
 
                             return (
-                                <Card key={member.id} className="border rounded-md py-2">
-                                    <CardContent className="px-2 flex items-center gap-4">
-                                        <div className="h-10 aspect-square rounded-full bg-amber-900 flex items-center justify-center">{memberInfo?.name.split(" ").map(n => n[0]).join("")}</div>
-                                        <div className="flex flex-col">
-                                            <p className="text-sm font-medium">{memberInfo?.name}</p>
-                                            <p className="text-xs text-muted-foreground">
-                                                {memberInfo?.company}
-                                            </p>
+                                <Card key={member.id} className="flex items-center gap-3.5 px-4.5 py-3.25 rounded-xl border cursor-default hover:brightness-110 transition-all">
+                                    <CardContent className="px-2 flex items-center gap-4 justify-between w-full">
+                                        <div className="flex-1 flex items-center gap-3.5 px-2 py-1">
+                                            <div className="size-8 rounded-lg grid place-items-center text-[13px] shrink-0 text-foreground bg-popover">{memberInfo?.name.split(" ").map(n => n[0]).join("")}</div>
+                                            <div className="flex-1">
+                                                <span className="text-[12.5px] font-bold block text-foreground">{memberInfo?.name}</span>
+                                                <span className="text-[11px] text-foreground-subtle">{memberInfo?.company ? memberInfo.company : "Entreprise inconnue"}</span>
+                                            </div>
                                         </div>
+                                        <Button variant="secondary" size={"sm"}>
+                                            <Link href={`mailto:${memberInfo?.email}`}>Contacter</Link>
+                                        </Button>
                                     </CardContent>
                                 </Card>
                             )
@@ -117,50 +155,64 @@ export default async function DashboardPage({
                     }
                 </div>
             </div>
-            <div>
+            <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold mb-2">Updates</h3>
-                    <Link href={`/project/${projectId}/updates`} className="flex items-center gap-2 hover:underline">Tous <ArrowRight className="w-4 h-4" /></Link>
+                    <h3 className="text-[15px] font-bold tracking-tight">Updates</h3>
+                    <Link
+                        href={`/project/${projectId}/updates`}
+                        className="flex items-center gap-1.5 text-[11px] text-foreground-subtle hover:text-primary-light transition-colors"
+                    >
+                        Tous <ArrowRight size={11} />
+                    </Link>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
-                    {
-                        projectInfo?.updates.slice(0, 3).map((update) => {
 
-                            const author = projectInfo.members.find(m => m.userId === update.authorId);
+                <div className="grid grid-cols-3 gap-3">
+                    {projectInfo?.updates.slice(0, 4).map((update) => {
+                        const author = projectInfo.members.find(m => m.userId === update.authorId);
 
-                            if (update.status === UpdateStatus.DRAFT) {
-                                return null;
-                            }
+                        if (update.status === UpdateStatus.DRAFT) return null;
 
-                            return (
-                                <Card className="border rounded-md min-w-75" key={update.id}>
-                                    <CardContent className="flex items-center gap-4 h-full">
-                                        <div className="flex-1 flex flex-col justify-between h-full">
-                                            <p className="text-sm font-medium">{update.title}</p>
-                                            <p className="text-xs text-muted-foreground">
-                                                Le {format(new Date(update.createdAt), "d MMM yyyy", { locale: fr })} par {author?.user.name || "Inconnu"}
-                                            </p>
+                        const typeIcon = update.type === UpdateType.FEATURE ? <ListPlus size={15} />
+                            : update.type === UpdateType.DESIGN ? <Paintbrush size={15} />
+                                : update.type === UpdateType.DEPLOY ? <HardDriveDownload size={15} />
+                                    : update.type === UpdateType.BUGFIX ? <BugOff size={15} />
+                                        : <ClockAlert size={15} />;
+
+                        const typeStyle = update.type === UpdateType.FEATURE ? "bg-info-bg text-info border-info-border"
+                            : update.type === UpdateType.DESIGN ? "bg-primary-ghost text-primary-light border-primary/30"
+                                : update.type === UpdateType.DEPLOY ? "bg-success-bg text-success border-success-border"
+                                    : update.type === UpdateType.BUGFIX ? "bg-warning-bg text-warning border-warning-border"
+                                        : "bg-card-elevated text-foreground-muted border-border-md";
+
+                        return (
+                            <Link key={update.id} href={`/project/${projectId}/updates/${update.id}`} className="col-span-1">
+                                <Card
+                                    key={update.id}
+                                    className="bg-card border-border group hover:border-border-hi hover:shadow-2xl transition-all overflow-hidden relative py-0"
+                                >
+                                    <div
+                                        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+                                        style={{ background: "radial-gradient(ellipse at top left, var(--primary-ghost), transparent 60%)" }}
+                                    />
+                                    <CardContent className="flex flex-col gap-3 p-4">
+                                        <div className={`self-start flex items-center justify-center size-8 rounded-lg border ${typeStyle}`}>
+                                            {typeIcon}
                                         </div>
-                                        {
-                                            update.type === UpdateType.FEATURE ? (
-                                                <ListPlus className="h-6 w-6 text-muted-foreground" />
-                                            ) : update.type === UpdateType.DESIGN ? (
-                                                <Paintbrush className="h-6 w-6 text-muted-foreground" />
-                                            ) : update.type === UpdateType.DEPLOY ? (
-                                                <HardDriveDownload className="h-6 w-6 text-muted-foreground" />
-                                            ) : update.type === UpdateType.BUGFIX ? (
-                                                <BugOff className="h-6 w-6 text-muted-foreground" />
-                                            ) : update.type === UpdateType.OTHER ? (
-                                                <ClockAlert className="h-6 w-6 text-muted-foreground" />
-                                            ) : (
-                                                <Flag className="h-6 w-6 text-muted-foreground" />
-                                            )
-                                        }
+                                        <div className="flex flex-col gap-1">
+                                            <p className="text-[13px] font-semibold tracking-tight leading-snug">{update.title}</p>
+                                            <div className="flex items-center gap-1.5 text-[11px] text-foreground-subtle">
+                                                <Calendar size={11} />
+                                                <span>{format(new Date(update.createdAt), "d MMM yyyy", { locale: fr })}</span>
+                                                <span className="text-foreground-subtle/40">•</span>
+                                                <span>{author?.user.name || "Inconnu"}</span>
+                                            </div>
+                                        </div>
                                     </CardContent>
                                 </Card>
-                            )
-                        })
-                    }
+                            </Link>
+
+                        );
+                    })}
                 </div>
             </div>
         </div>

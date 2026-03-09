@@ -1,4 +1,3 @@
-
 import EditUpdateForm from "@/src/components/form/edit-update-form"
 import { Button } from "@/src/components/ui/shadcn/button";
 import { Card } from "@/src/components/ui/shadcn/card";
@@ -59,19 +58,26 @@ export default async function EditUpdatePage({
 
     return (
         <div className="flex flex-col gap-6 my-4">
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" asChild>
+            <div className="flex items-center gap-3">
+                <Button variant="outline" size="icon" asChild
+                    className="size-8 border-border-md hover:border-border-hi shrink-0">
                     <Link href={`/project/${projectId}/updates/${updateId}`}>
-                        <ArrowLeft className="h-4 w-4" />
+                        <ArrowLeft size={15} />
                     </Link>
                 </Button>
-                <h1 className="text-2xl font-bold">Détails de l&apos;update</h1>
+                <div className="flex flex-col gap-0.5">
+                    <p className="text-xs font-bold uppercase tracking-widest text-foreground-subtle">Updates</p>
+                    <h1 className="text-2xl font-extrabold tracking-tight">Modifier l&apos;update</h1>
+                </div>
             </div>
 
-            <Card className="w-full max-w-4xl mx-auto">
-                <EditUpdateForm project={project} update={update} authorized={userIsMaker.isMaker || !!authorized} />
+            <Card className="w-full max-w-4xl mx-auto bg-card border-border overflow-hidden">
+                <EditUpdateForm
+                    project={project}
+                    update={update}
+                    authorized={userIsMaker.isMaker || !!authorized}
+                />
             </Card>
         </div>
-
     )
 }

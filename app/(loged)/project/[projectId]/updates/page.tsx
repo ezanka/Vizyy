@@ -82,7 +82,6 @@ export default async function UpdatesPage({
         },
     });
 
-
     const getUserName = (userId: string | null, members: typeof updates[0]['organization']['members']) => {
         if (!userId) return "Utilisateur inconnu";
         const member = members?.find(m => m.userId === userId);
@@ -90,18 +89,22 @@ export default async function UpdatesPage({
     };
 
     return (
-        <div className="flex flex-col gap-4 my-4">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold">Updates du projet</h1>
-                    <p className="text-sm text-muted-foreground mt-1">
+        <div className="flex flex-col gap-6 my-4">
+            <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                    <p className="text-xs font-bold uppercase tracking-widest text-foreground-subtle">
+                        Projet
+                    </p>
+                    <h1 className="text-2xl font-extrabold tracking-tight">Updates</h1>
+                    <p className="text-sm text-foreground-muted">
                         {updates.length} {updates.length > 1 ? 'updates' : 'update'}
                     </p>
                 </div>
                 {isMaker && (
-                    <Button asChild>
+                    <Button asChild className="gap-2 shrink-0">
                         <Link href={`/project/${projectId}/updates/new`}>
-                            <Plus className="h-4 w-4" /> Nouvelle update
+                            <Plus size={14} />
+                            Nouvelle update
                         </Link>
                     </Button>
                 )}
@@ -116,32 +119,36 @@ export default async function UpdatesPage({
 
                     return (
                         <Card
-                            className="overflow-hidden hover:shadow-md transition-shadow"
                             key={update.id}
+                            className="group bg-card border-border hover:border-border-hi hover:shadow-2xl transition-all duration-200 overflow-hidden relative"
                         >
-                            <CardHeader className="pb-3">
+                            <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+                                style={{ background: "radial-gradient(ellipse at top left, var(--primary-ghost), transparent 60%)" }}
+                            />
+
+                            <CardHeader className="pb-3 relative">
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <h2 className="text-xl font-semibold tracking-tight truncate">
+                                        <div className="flex items-center gap-2.5 mb-2.5 flex-wrap">
+                                            <h2 className="text-[15px] font-bold tracking-tight truncate">
                                                 {update.title}
                                             </h2>
                                             {update.valid ? (
-                                                <Badge variant="default" className="gap-1 shrink-0 bg-green-600 hover:bg-green-700">
-                                                    <CheckCircle2 className="h-3 w-3" />
+                                                <Badge className="gap-1 shrink-0 bg-success-bg text-success border border-success-border text-[10px] font-bold">
+                                                    <CheckCircle2 size={10} />
                                                     Validé
                                                 </Badge>
                                             ) : (
-                                                <Badge variant="outline" className="gap-1 shrink-0 bg-amber-600 hover:bg-amber-700">
-                                                    <Clock className="h-3 w-3" />
+                                                <Badge className="gap-1 shrink-0 bg-warning-bg text-warning border border-warning-border text-[10px] font-bold">
+                                                    <Clock size={10} />
                                                     En attente
                                                 </Badge>
                                             )}
                                         </div>
 
-                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                                            <div className="flex items-center gap-1.5">
-                                                <Calendar className="h-3.5 w-3.5" />
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                            <div className="flex items-center gap-1.5 text-[11px] text-foreground-subtle">
+                                                <Calendar size={11} />
                                                 <span>
                                                     {format(new Date(update.createdAt), "d MMM yyyy", { locale: fr })}
                                                     {" à "}
@@ -149,18 +156,18 @@ export default async function UpdatesPage({
                                                 </span>
                                             </div>
 
-                                            <span className="text-muted-foreground/40">•</span>
+                                            <span className="text-foreground-subtle/40 text-[10px]">•</span>
 
-                                            <div className="flex items-center gap-1.5">
-                                                <User className="h-3.5 w-3.5" />
+                                            <div className="flex items-center gap-1.5 text-[11px] text-foreground-subtle">
+                                                <User size={11} />
                                                 <span>{authorName}</span>
                                             </div>
 
                                             {update.updatedAt && new Date(update.updatedAt).getTime() !== new Date(update.createdAt).getTime() && (
                                                 <>
-                                                    <span className="text-muted-foreground/40">•</span>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <CalendarCog className="h-3.5 w-3.5" />
+                                                    <span className="text-foreground-subtle/40 text-[10px]">•</span>
+                                                    <div className="flex items-center gap-1.5 text-[11px] text-foreground-subtle">
+                                                        <CalendarCog size={11} />
                                                         <span>
                                                             Modifié le {format(new Date(update.updatedAt), "d MMM", { locale: fr })}
                                                             {update.updaterId && updaterName !== authorName && ` par ${updaterName}`}
@@ -173,24 +180,29 @@ export default async function UpdatesPage({
                                         </div>
                                     </div>
 
-                                    <Button size="sm" variant="ghost" className="shrink-0" asChild>
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="shrink-0 gap-1.5 text-foreground-subtle hover:text-foreground"
+                                        asChild
+                                    >
                                         <Link href={`/project/${projectId}/updates/${update.id}`}>
-                                            <span className="hidden sm:inline">Voir détails</span>
-                                            <ChevronRight className="h-4 w-4 sm:ml-1" />
+                                            <span className="hidden sm:inline text-xs font-semibold">Voir</span>
+                                            <ChevronRight size={14} />
                                         </Link>
                                     </Button>
                                 </div>
                             </CardHeader>
 
-                            <CardContent className="py-2">
-                                <div className="bg-muted/30 px-3 py-2.5 rounded-md">
-                                    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line line-clamp-3">
+                            <CardContent className="py-0 pb-3 relative">
+                                <div className="bg-card-elevated border border-border rounded-lg px-3.5 py-3">
+                                    <p className="text-[13px] text-foreground-muted leading-relaxed whitespace-pre-line line-clamp-3">
                                         {update.content}
                                     </p>
                                     {update.content.length > 150 && (
                                         <Link
                                             href={`/project/${projectId}/updates/${update.id}`}
-                                            className="text-xs text-primary hover:underline mt-1.5 inline-block"
+                                            className="text-[11px] font-semibold text-primary-light hover:text-primary hover:underline underline-offset-4 mt-2 inline-block transition-colors"
                                         >
                                             Lire la suite →
                                         </Link>
@@ -198,39 +210,41 @@ export default async function UpdatesPage({
                                 </div>
                             </CardContent>
 
-                            <CardFooter className="pt-2 pb-3">
+                            <CardFooter className="pt-3 pb-3.5 border-t border-border relative">
                                 {update.status === UpdateStatus.DRAFT && isMaker ? (
-                                    <Badge variant="outline" className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                                    <Badge className="bg-card-elevated text-foreground-muted border border-border-md text-[10px] font-bold">
                                         Brouillon
                                     </Badge>
                                 ) : update.valid ? (
-                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-5 w-5 border">
-                                                        <AvatarFallback className="text-[10px]">
-                                                            {validatorName.charAt(0).toUpperCase()}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <span>
-                                                        Validé par <span className="font-medium text-foreground">{validatorName}</span>
-                                                        {" à "}
-                                                        {update.validatedAt ? format(new Date(update.validatedAt), "d MMM yyyy 'à' HH:mm", { locale: fr }) : "date inconnue"}
-                                                    </span>
-                                                </div>
-                                            </TooltipTrigger>
-                                            {validatorEmail && (
-                                                <TooltipContent>
-                                                    <p>{validatorEmail}</p>
-                                                </TooltipContent>
-                                            )}
-                                        </Tooltip>
-                                    </div>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <div className="flex items-center gap-2 cursor-default">
+                                                <Avatar className="size-5 border border-success-border">
+                                                    <AvatarFallback className="text-[9px] font-extrabold bg-success-bg text-success">
+                                                        {validatorName.charAt(0).toUpperCase()}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <span className="text-[11px] text-foreground-subtle">
+                                                    Validé par{" "}
+                                                    <span className="font-semibold text-foreground">{validatorName}</span>
+                                                    {" · "}
+                                                    {update.validatedAt
+                                                        ? format(new Date(update.validatedAt), "d MMM yyyy 'à' HH:mm", { locale: fr })
+                                                        : "date inconnue"
+                                                    }
+                                                </span>
+                                            </div>
+                                        </TooltipTrigger>
+                                        {validatorEmail && (
+                                            <TooltipContent>
+                                                <p>{validatorEmail}</p>
+                                            </TooltipContent>
+                                        )}
+                                    </Tooltip>
                                 ) : (
                                     <div className="flex items-center justify-between w-full">
-                                        <span className="text-xs italic text-muted-foreground">
-                                            En attente de validation
+                                        <span className="text-[11px] italic text-foreground-subtle">
+                                            En attente de validation client
                                         </span>
                                         {isClient && (
                                             <ValidUpdateButton
@@ -247,15 +261,29 @@ export default async function UpdatesPage({
                 })}
 
                 {updates.length === 0 && (
-                    <Card className="p-8 text-center">
-                        <p className="text-muted-foreground">Aucune update pour le moment</p>
-                        {isMaker && (
-                            <Button asChild className="mt-4">
-                                <Link href={`/project/${projectId}/updates/new`}>
-                                    <Plus className="h-4 w-4" /> Créer la première update
-                                </Link>
-                            </Button>
-                        )}
+                    <Card className="bg-card border-border">
+                        <CardContent className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+                            <div className="size-12 rounded-xl bg-card-elevated border border-border flex items-center justify-center">
+                                <Calendar size={20} className="text-foreground-subtle" />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <p className="text-sm font-semibold">Aucune update pour le moment</p>
+                                <p className="text-xs text-foreground-muted max-w-56">
+                                    {isMaker
+                                        ? "Publiez votre première update pour informer vos clients."
+                                        : "Vous serez notifié dès qu'une update sera publiée."
+                                    }
+                                </p>
+                            </div>
+                            {isMaker && (
+                                <Button asChild size="sm" variant="outline" className="gap-2">
+                                    <Link href={`/project/${projectId}/updates/new`}>
+                                        <Plus size={13} />
+                                        Créer la première update
+                                    </Link>
+                                </Button>
+                            )}
+                        </CardContent>
                     </Card>
                 )}
             </div>

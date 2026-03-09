@@ -4,30 +4,16 @@ import {
     SidebarGroup,
     SidebarGroupLabel,
     SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuItem,
-    SidebarMenuButton,
     SidebarFooter,
 } from "@/src/components/ui/shadcn/sidebar"
-import {
-    Home,
-    CalendarDays,
-    Files,
-    LinkIcon,
-    Megaphone,
-    Users,
-    MessageCircleMore,
-    UserRoundCog,
-    Settings,
-    Bug,
-    ListTodo
-} from "lucide-react"
+import { Settings } from "lucide-react"
 import { getUser } from "@/src/lib/auth-server"
 import Link from "next/link"
 import { prisma } from "@/src/lib/prisma"
 import HeaderSidebar from "./header-sidebar"
 import { MemberRole } from "@/src/generated/prisma/enums"
 import FooterSidebar from "./footer-sidebar"
+import { SidebarMainNav, SidebarGestionNav } from "./sidebar-nav"
 
 export async function AppSidebar({ projectId }: { projectId: string }) {
     const user = await getUser()
@@ -38,71 +24,14 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
             organization: {
                 id: projectId || undefined
             }
-
         }
     });
 
     const isClient = userRole?.role === MemberRole.CLIENT;
 
-    const nav = [
-        {
-            title: "Dashboard",
-            url: `/dashboard`,
-            icon: Home,
-        },
-        {
-            title: "Updates",
-            url: `/updates`,
-            icon: Megaphone,
-        },
-        {
-            title: "Assets",
-            url: `/assets`,
-            icon: Files,
-        },
-        {
-            title: "Test",
-            url: `/test`,
-            icon: Bug,
-        },
-        {
-            title: "Feedback",
-            url: `/feedback`,
-            icon: MessageCircleMore,
-        },
-        {
-            title: "Timeline",
-            url: `/timeline`,
-            icon: CalendarDays,
-        },
-        {
-            title: "Todos",
-            url: `/todos`,
-            icon: ListTodo,
-        },
-    ]
-
-    const gestionNav = [
-        {
-            title: "Clients",
-            url: `/clients`,
-            icon: UserRoundCog,
-        },
-        {
-            title: "Équipe",
-            url: `/team`,
-            icon: Users,
-        },
-        {
-            title: "Liens",
-            url: `/links`,
-            icon: LinkIcon,
-        },
-    ]
-
     const userInitial = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'
     const userName = user?.name || 'Utilisateur'
-    const userEmail = user?.email || 'user@wizyy.com'
+    const userEmail = user?.email || 'user@vizyy.com'
 
     return (
         <Sidebar className="border-none">
@@ -113,41 +42,17 @@ export async function AppSidebar({ projectId }: { projectId: string }) {
                     <SidebarGroup>
                         <SidebarGroupLabel>Navigation du projet</SidebarGroupLabel>
                         <SidebarGroupContent>
-                            <SidebarMenu>
-                                {nav.map((item) => (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton asChild className="hover:bg-card">
-                                            <Link href={`/project/${projectId}/${item.url}`}>
-                                                <item.icon />
-                                                <span>{item.title}</span>
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                            </SidebarMenu>
+                            <SidebarMainNav projectId={projectId} />
                         </SidebarGroupContent>
                     </SidebarGroup>
 
                     {!isClient && (
-                        <>
-                            <SidebarGroup>
-                                <SidebarGroupLabel>Gestions du projet</SidebarGroupLabel>
-                                <SidebarGroupContent>
-                                    <SidebarMenu>
-                                        {gestionNav.map((item) => (
-                                            <SidebarMenuItem key={item.title}>
-                                                <SidebarMenuButton asChild className="hover:bg-card">
-                                                    <Link href={`/project/${projectId}/${item.url}`}>
-                                                        <item.icon />
-                                                        <span>{item.title}</span>
-                                                    </Link>
-                                                </SidebarMenuButton>
-                                            </SidebarMenuItem>
-                                        ))}
-                                    </SidebarMenu>
-                                </SidebarGroupContent>
-                            </SidebarGroup>
-                        </>
+                        <SidebarGroup>
+                            <SidebarGroupLabel>Gestions du projet</SidebarGroupLabel>
+                            <SidebarGroupContent>
+                                <SidebarGestionNav projectId={projectId} />
+                            </SidebarGroupContent>
+                        </SidebarGroup>
                     )}
                 </SidebarContent>
 

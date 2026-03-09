@@ -60,7 +60,7 @@ export function Item({ projectId, todo, index, column, authorized }: { projectId
             </div>
 
             {todo.description && (
-                <p className="px-3 pb-2.5 text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                <p className="px-3 pb-2.5 text-xs text-muted-foreground leading-relaxed line-clamp-2 overflow-y-hidden max-h-10">
                     {todo.description}
                 </p>
             )}

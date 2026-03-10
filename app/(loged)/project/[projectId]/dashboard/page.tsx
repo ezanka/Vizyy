@@ -58,7 +58,7 @@ export default async function DashboardPage({
                     <CardContent>
                         <GradientText className="text-[2rem] font-black tracking-[-0.05em] leading-none">{projectInfo?.updates.filter((f) => f.status !== UpdateStatus.DRAFT).length || 0}</GradientText>
                         <p className="text-[11.5px] text-foreground-subtle mt-2 flex items-center gap-2">
-                            Dernière le {format(new Date(projectInfo?.updates[0]?.createdAt || ""), "Pp", { locale: fr })}
+                            Dernière le {projectInfo?.updates[0]?.createdAt ? format(new Date(projectInfo?.updates[0]?.createdAt || ""), "Pp", { locale: fr }) : "Jamais"}
                             <Badge className="bg-success-bg text-success border-success-border text-[9.5px]">↑ +3</Badge>
                         </p>
                     </CardContent>
@@ -87,7 +87,7 @@ export default async function DashboardPage({
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-[1.8rem] font-black tracking-[-0.03em] leading-none">{format(new Date(projectInfo?.deadline || ""), "d MMM")}</p>
+                        <p className="text-[1.8rem] font-black tracking-[-0.03em] leading-none">{projectInfo?.deadline ? format(new Date(projectInfo?.deadline || ""), "d MMM") : "Pas de date limite"}</p>
                         <p className="text-[11.5px] text-foreground-subtle mt-2 flex items-center gap-2">
 
                             {differenceInDays(new Date(projectInfo?.deadline || ""), new Date()) > 7 ? (

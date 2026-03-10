@@ -88,8 +88,7 @@ export default async function DashboardPage({
                     </CardHeader>
                     <CardContent>
                         <p className="text-[1.8rem] font-black tracking-[-0.03em] leading-none">{projectInfo?.deadline ? format(new Date(projectInfo?.deadline || ""), "d MMM") : "Pas de date limite"}</p>
-                        <p className="text-[11.5px] text-foreground-subtle mt-2 flex items-center gap-2">
-
+                        {projectInfo?.deadline  && ( <p className="text-[11.5px] text-foreground-subtle mt-2 flex items-center gap-2">
                             {differenceInDays(new Date(projectInfo?.deadline || ""), new Date()) > 7 ? (
                                 <>
                                     {differenceInDays(new Date(projectInfo?.deadline || ""), new Date())} jours restants
@@ -107,7 +106,7 @@ export default async function DashboardPage({
                                 </>
 
                             )}
-                        </p>
+                        </p>)}
                     </CardContent>
                 </Card>
                 <Card className="border-border bg-card group hover:border-border-hi hover:shadow-2xl transition-all">

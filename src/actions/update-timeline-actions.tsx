@@ -5,7 +5,7 @@ import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { MemberRole } from "../generated/prisma/enums";
 
-export async function updateTimeline(projectId: string, name: string, startDate: Date, endDate: Date, timelineId: string, updateId?: string) {
+export async function updateTimeline(projectId: string, name: string, startDate: Date, endDate: Date, timelineId: string, updateId?: string, assignedTo?: string) {
     const user = await getUser();
 
     if (!user) {
@@ -39,6 +39,7 @@ export async function updateTimeline(projectId: string, name: string, startDate:
             startDate: startDate,
             endDate: endDate,
             ...(updateId && { updateId: updateId }),
+            assigneeId: assignedTo || null,
             updatedAt: new Date(),
         },
     });

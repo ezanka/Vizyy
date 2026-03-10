@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { CalendarPlus, ChevronLeft, ChevronRight, Delete, Eye, Megaphone } from "lucide-react";
+import { CalendarPlus, ChevronLeft, ChevronRight, Delete, Eye, Megaphone, UserIcon } from "lucide-react";
 import { Button } from "./ui/shadcn/button";
-import { Timeline as TimelineType, Update } from "@/src/generated/prisma/client";
+import { Timeline as TimelineType, Update, Member, User } from "@/src/generated/prisma/client";
 import {
     Dialog,
     DialogClose,
@@ -30,7 +30,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/src/components/ui/shadcn/select"
-import NewTimelineButton from "./button/new-timeline-button";
+import CreateTimelineButton from "./button/create-timeline-button";
 import {
     Sheet,
     SheetClose,
@@ -47,7 +47,11 @@ import UpdateTimelineButton from "./button/update-timeline-button";
 import DeleteTimelineButton from "./button/delete-timeline-button";
 import { Separator } from "./ui/shadcn/separator";
 
-export default function Timeline({ timeline, updates, projectId, authorized }: { timeline: TimelineType[], updates: Update[], projectId: string, authorized: boolean }) {
+type MemberWithUser = Member & {
+    user: User | null;
+}
+
+export default function Timeline({ timeline, members, updates, projectId, authorized, deadline }: { timeline: TimelineType[], members: MemberWithUser[], updates: Update[], projectId: string, authorized: boolean, deadline: Date | null }) {
     const getStartOfWeek = (date: Date) => {
         const d = new Date(date);
         const day = d.getDay();
@@ -60,24 +64,27 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
     const [startDate, setStartDate] = React.useState<Date | null>(null)
     const [endDate, setEndDate] = React.useState<Date | null>(null)
     const [updateId, setUpdateId] = React.useState<string>("")
+    const [assignedTo, setAssignedTo] = React.useState<MemberWithUser | null>(null)
     const [timelineId, setTimelineId] = React.useState<string>("")
     const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
     const [isUpdateSheetOpen, setIsUpdateSheetOpen] = React.useState(false);
 
-    const submitForm = () => {
+    const resetForm = () => {
         setIsCreateDialogOpen(false);
         setName("");
         setStartDate(null);
         setEndDate(null);
         setUpdateId("");
+        setAssignedTo(null);
     }
 
-    const editSubmitForm = (name: string, startDate: Date, endDate: Date, timelineId: string, updateId: string | null) => {
+    const editSubmitForm = (name: string, startDate: Date, endDate: Date, timelineId: string, assignedTo: MemberWithUser | null, updateId: string | null) => {
         setName(name);
         setStartDate(startDate);
         setEndDate(endDate);
         setTimelineId(timelineId);
         setUpdateId(updateId ?? "");
+        setAssignedTo(assignedTo);
     }
 
     const goToPreviousWeek = () => {
@@ -179,7 +186,7 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
 
                 <div className="flex justify-end flex-1">
                     {authorized && (
-                        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => { setIsCreateDialogOpen(open); if (!open) resetForm(); }}>
                             <DialogTrigger asChild>
                                 <Button>
                                     <CalendarPlus size={16} /> Nouvelle événement
@@ -252,18 +259,47 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
                                         </div>
                                         <Field className="mx-auto">
                                             <FieldLabel htmlFor="update">Associer un update</FieldLabel>
-                                            <Select value={updateId} onValueChange={setUpdateId}>
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Choisir un update" />
-                                                </SelectTrigger>
-                                                <SelectContent id="update">
-                                                    {updates.map((update) => (
-                                                        <SelectItem key={update.id} value={update.id}>
-                                                            {update.title}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
+                                            <div className="flex items-center gap-1">
+                                                <Select value={updateId} onValueChange={setUpdateId}>
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue placeholder="Choisir un update" />
+                                                    </SelectTrigger>
+                                                    <SelectContent id="update">
+                                                        {updates.map((update) => (
+                                                            <SelectItem key={update.id} value={update.id}>
+                                                                {update.title}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                {updateId && (
+                                                    <Button disabled={!updateId || !authorized} onClick={() => setUpdateId("")} variant="outline">
+                                                        <Delete />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </Field>
+                                        <Field className="mx-auto">
+                                            <FieldLabel htmlFor="update">Assigné à un membre</FieldLabel>
+                                            <div className="flex items-center gap-1">
+                                                <Select value={assignedTo?.id || ""} onValueChange={setAssignedTo ? (userId) => { setAssignedTo(members.find((m) => m.id === userId) || null); } : undefined}>
+                                                    <SelectTrigger className="w-full" disabled={!authorized}>
+                                                        <SelectValue placeholder="Choisir un membre" />
+                                                    </SelectTrigger>
+                                                    <SelectContent id="assigned-to">
+                                                        {members.map((member) => (
+                                                            <SelectItem key={member.id} value={member.id}>
+                                                                {member.user ? member.user.name : "Utilisateur supprimé"}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                {assignedTo && (
+                                                    <Button disabled={!assignedTo || !authorized} onClick={() => setAssignedTo(null)} variant="outline">
+                                                        <Delete />
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </Field>
                                     </div>
                                 </div>
@@ -271,7 +307,7 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
                                     <DialogClose asChild>
                                         <Button type="button" variant="outline">Annuler</Button>
                                     </DialogClose>
-                                    <NewTimelineButton projectId={projectId} name={name} startDate={startDate!} endDate={endDate!} updateId={updateId} onSuccess={submitForm} />
+                                    <CreateTimelineButton projectId={projectId} name={name} startDate={startDate!} endDate={endDate!} updateId={updateId} assignedTo={assignedTo?.user?.id || ""} onSuccess={resetForm} />
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -306,6 +342,19 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
                     </div>
                 ) : (
                     <div className="relative" style={{ height: `${totalHeight}px`, minHeight: '48px' }}>
+                        {deadline && (() => {
+                            const deadlineDate = new Date(deadline);
+                            const deadlineDayIndex = dates.findIndex(d => d.toDateString() === deadlineDate.toDateString());
+                            if (deadlineDayIndex === -1) return null;
+                            const leftPosition = ((deadlineDayIndex + 0.5) / 7) * 100;
+                            return (
+                                <div
+                                    className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-10 pointer-events-none"
+                                    style={{ left: `${leftPosition}%` }}
+                                    title={`Deadline : ${deadlineDate.toLocaleDateString("fr-FR")}`}
+                                />
+                            );
+                        })()}
                         {sortedTimeline.map((event, index) => {
                             const eventStartDate = new Date(event.startDate);
                             const eventStartDateNextDay = new Date(eventStartDate);
@@ -342,7 +391,7 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
                                                         top: `${index * 48}px`,
                                                     }}
                                                     title={`${event.name} (${new Date(event.startDate).toLocaleDateString("fr-FR")} - ${new Date(event.endDate).toLocaleDateString("fr-FR")})`}
-                                                    onClick={() => editSubmitForm(event.name, event.startDate, event.endDate, event.id, event.updateId)}
+                                                    onClick={() => editSubmitForm(event.name, event.startDate, event.endDate, event.id, members.find((m) => m.userId === event.assigneeId) || null, event.updateId)}
                                                 >
                                                     {startsBeforeWeek && (
                                                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-foreground/40" />
@@ -353,6 +402,11 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
                                                             {event.name}
                                                         </span>
 
+                                                        {event.assigneeId && (
+                                                            <div className="shrink-0 w-5 h-5 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                                                                <UserIcon size={12} className="text-primary-foreground" />
+                                                            </div>
+                                                        )}
                                                         {event.updateId && (
                                                             <div className="shrink-0 w-5 h-5 rounded-full bg-primary-foreground/20 flex items-center justify-center">
                                                                 <Megaphone size={12} className="text-primary-foreground" />
@@ -456,6 +510,28 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
                                                                 )}
                                                             </div>
                                                         </Field>
+                                                        <Field className="mx-auto">
+                                                            <FieldLabel htmlFor="assigned-to">Associer un membre</FieldLabel>
+                                                            <div className="flex items-center gap-1">
+                                                                <Select value={assignedTo?.id || ""} onValueChange={setAssignedTo ? (userId) => { setAssignedTo(members.find((m) => m.id === userId) || null); } : undefined}>
+                                                                    <SelectTrigger className="w-full" disabled={!authorized}>
+                                                                        <SelectValue placeholder="Choisir un membre" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent id="assigned-to">
+                                                                        {members.map((member) => (
+                                                                            <SelectItem key={member.id} value={member.id}>
+                                                                                {member.user?.name || "Utilisateur supprimé"}
+                                                                            </SelectItem>
+                                                                        ))}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                {assignedTo && (
+                                                                    <Button disabled={!assignedTo || !authorized} onClick={() => setAssignedTo(null)} variant="outline">
+                                                                        <Delete />
+                                                                    </Button>
+                                                                )}
+                                                            </div>
+                                                        </Field>
                                                     </div>
                                                 </div>
                                                 <SheetFooter>
@@ -487,7 +563,7 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
                                                     top: `${index * 48}px`,
                                                 }}
                                                 title={`${event.name} (${new Date(event.startDate).toLocaleDateString("fr-FR")} - ${new Date(event.endDate).toLocaleDateString("fr-FR")})`}
-                                                onClick={() => editSubmitForm(event.name, event.startDate, event.endDate, event.id, event.updateId)}
+                                                onClick={() => editSubmitForm(event.name, event.startDate, event.endDate, event.id, members.find((m) => m.userId === event.assigneeId) || null, event.updateId)}
                                             >
                                                 {startsBeforeWeek && (
                                                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-foreground/40" />
@@ -498,6 +574,11 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
                                                         {event.name}
                                                     </span>
 
+                                                    {event.assigneeId && (
+                                                        <div className="shrink-0 w-5 h-5 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                                                            <UserIcon size={12} className="text-primary-foreground" />
+                                                        </div>
+                                                    )}
                                                     {event.updateId && (
                                                         <div className="shrink-0 w-5 h-5 rounded-full bg-primary-foreground/20 flex items-center justify-center">
                                                             <Megaphone size={12} className="text-primary-foreground" />
@@ -600,11 +681,33 @@ export default function Timeline({ timeline, updates, projectId, authorized }: {
                                                             )}
                                                         </div>
                                                     </Field>
+                                                    <Field className="mx-auto">
+                                                        <FieldLabel htmlFor="assigned-to">Associer un membre</FieldLabel>
+                                                        <div className="flex items-center gap-1">
+                                                            <Select value={assignedTo?.id || ""} onValueChange={setAssignedTo ? (userId) => { setAssignedTo(members.find((m) => m.id === userId) || null); } : undefined}>
+                                                                <SelectTrigger className="w-full" disabled={!authorized}>
+                                                                    <SelectValue placeholder="Choisir un membre" />
+                                                                </SelectTrigger>
+                                                                <SelectContent id="assigned-to">
+                                                                    {members.map((member) => (
+                                                                        <SelectItem key={member.id} value={member.id}>
+                                                                            {member.user?.name || "Utilisateur supprimé"}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            {assignedTo && (
+                                                                <Button disabled={!assignedTo || !authorized} onClick={() => setAssignedTo(null)} variant="outline">
+                                                                    <Delete />
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    </Field>
                                                 </div>
                                             </div>
                                             <SheetFooter>
                                                 <div className="flex items-center justify-between gap-2 flex-1 w-full">
-                                                    <UpdateTimelineButton projectId={projectId} name={name} startDate={startDate!} endDate={endDate!} updateId={updateId} timelineId={timelineId} onSuccess={() => setIsUpdateSheetOpen(false)} />
+                                                    <UpdateTimelineButton projectId={projectId} name={name} startDate={startDate!} endDate={endDate!} updateId={updateId} timelineId={timelineId} assignedTo={assignedTo?.user?.id || undefined} onSuccess={() => setIsUpdateSheetOpen(false)} />
                                                     <DeleteTimelineButton projectId={projectId} timelineId={timelineId} onSuccess={() => setIsUpdateSheetOpen(false)} />
                                                 </div>
                                                 <SheetClose asChild>

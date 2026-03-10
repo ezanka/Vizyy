@@ -3,10 +3,10 @@
 import { Button } from "@/src/components/ui/shadcn/button";
 import { updateTimeline } from "@/src/actions/update-timeline-actions";
 
-export default function UpdateTimelineButton({ projectId, name, startDate, endDate, updateId, timelineId, onSuccess }: { projectId: string, name: string, startDate: Date, endDate: Date, updateId: string, timelineId: string, onSuccess: () => void }) {
+export default function UpdateTimelineButton({ projectId, name, startDate, endDate, updateId, timelineId, assignedTo, onSuccess }: { projectId: string, name: string, startDate: Date, endDate: Date, updateId: string, timelineId: string, assignedTo?: string, onSuccess: () => void }) {
 
     const handleUpateTimeline = async () => {
-        const success = await updateTimeline(projectId, name, startDate, endDate, timelineId, updateId);
+        const success = await updateTimeline(projectId, name, startDate, endDate, timelineId, updateId, assignedTo);
         
         if (success.success) {
             onSuccess();

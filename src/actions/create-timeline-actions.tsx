@@ -5,7 +5,7 @@ import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
 
-export async function createTimeline(projectId: string, name: string, startDate: Date, endDate: Date, updateId?: string) {
+export async function createTimeline(projectId: string, name: string, startDate: Date, endDate: Date, updateId?: string, assignedTo?: string) {
     const user = await getUser();
 
     if (!user) {
@@ -20,6 +20,7 @@ export async function createTimeline(projectId: string, name: string, startDate:
             startDate: startDate,
             endDate: endDate,
             ...(updateId && { updateId: updateId }),
+            ...(assignedTo && { assigneeId: assignedTo }),
             createdAt: new Date(),
         },
     });

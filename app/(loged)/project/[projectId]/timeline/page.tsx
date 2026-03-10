@@ -16,6 +16,24 @@ export default async function timelinePage({
     const { projectId } = await params;
     const authorized = (await isMaker(projectId)).isMaker;
 
+    const deadline = await prisma.organization.findUnique({
+        where: {
+            id: projectId,
+        },
+        select: {
+            deadline: true,
+        },
+    })
+
+    const members = await prisma.member.findMany({
+        where: {
+            organizationId: projectId,
+        },
+        include: {
+            user: true,
+        },
+    })
+
     const timeline = await prisma.timeline.findMany({
         where: {
             organizationId: projectId,
@@ -31,7 +49,7 @@ export default async function timelinePage({
     return (
         <Card className="mt-4">
             <CardHeader>
-                <Timeline timeline={timeline} updates={updates} projectId={projectId} authorized={authorized || false} />
+                <Timeline timeline={timeline} members={members} updates={updates} projectId={projectId} authorized={authorized || false} deadline={deadline?.deadline || null} />
             </CardHeader>
         </Card>
     )

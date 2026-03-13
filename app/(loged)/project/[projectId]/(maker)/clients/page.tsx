@@ -4,6 +4,7 @@ import { Separator } from "@/src/components/ui/shadcn/separator";
 import { MemberRole } from "@/src/generated/prisma/enums";
 import { getUser } from "@/src/lib/auth-server";
 import { prisma } from "@/src/lib/prisma"
+import { redirect } from "next/navigation";
 
 type Params = {
     projectId: string;
@@ -17,10 +18,14 @@ export default async function ClientsPage({
     const { projectId } = await params;
     const user = await getUser();
 
+    if (!user) {
+        redirect('/auth/signin');
+    }
+
     const isMaker = await prisma.member.findUnique({
         where: {
             userId_organizationId: {
-                userId: user?.id!,
+                userId: user.id!,
                 organizationId: projectId,
             }
         }

@@ -36,7 +36,7 @@ export async function inviteClient(email: string, projectId: string) {
     });
 
     if (!userToAdd) {
-        return { error: "Aucun utilisateur trouvé avec cet email" };
+        return { error: "Si cet email est enregistré, une invitation a été envoyée." };
     }
 
     const existingMember = await prisma.member.findFirst({

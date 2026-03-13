@@ -12,7 +12,7 @@ export default async function ProfilePage() {
     if (!user) {
         return (
             <div className="flex flex-col gap-4 my-4 justify-between flex-1">
-                <p>Vous devez être connecté pour voir votre profil.</p>
+                <p className="text-muted-foreground">Vous devez être connecté pour voir votre profil.</p>
             </div>
         );
     }
@@ -24,7 +24,7 @@ export default async function ProfilePage() {
     return (
         <div className="flex flex-col gap-6 my-8 w-full max-w-lg">
             <div className="flex flex-col items-center gap-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-pink-500 text-white text-3xl font-semibold">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-ghost border border-primary/20 text-primary text-3xl font-semibold">
                     {user.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="text-center">
@@ -40,7 +40,7 @@ export default async function ProfilePage() {
                     <Mail className="h-4 w-4" />
                     <span>{user.email}</span>
                     {user.emailVerified && (
-                        <span className="text-xs bg-green-950 border border-green-800 text-green-500 px-2 py-0.5 rounded-full">
+                        <span className="text-xs bg-success-bg border border-success-border text-success px-2 py-0.5 rounded-full">
                             Vérifié
                         </span>
                     )}

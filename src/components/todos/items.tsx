@@ -9,18 +9,18 @@ import { Prisma } from '@/src/generated/prisma/client';
 type TodoWithAssignee = Prisma.TodoGetPayload<{ include: { assignee: true } }>;
 
 const priorityConfig = {
-    LOW: { label: 'Basse', class: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
-    MEDIUM: { label: 'Moyenne', class: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
-    HIGH: { label: 'Élevée', class: 'bg-rose-500/10 text-rose-500 border-rose-500/20' },
-    CRITICAL: { label: 'Critique', class: 'bg-red-500/10 text-red-500 border-red-500/20' }
+    LOW: { label: 'Basse', class: 'bg-success-bg text-success border-success-border' },
+    MEDIUM: { label: 'Moyenne', class: 'bg-warning-bg text-warning border-warning-border' },
+    HIGH: { label: 'Élevée', class: 'bg-destructive-bg text-destructive border-destructive-border' },
+    CRITICAL: { label: 'Critique', class: 'bg-destructive-bg text-destructive border-destructive-border' },
 } as const;
 
 const typeConfig = {
-    DEVELOPMENT: { label: 'Dev', class: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-    BUG: { label: 'Bug', class: 'bg-red-500/10 text-red-400 border-red-500/20' },
-    DESIGN: { label: 'Design', class: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
-    DOCUMENTATION: { label: 'Docs', class: 'bg-sky-500/10 text-sky-400 border-sky-500/20' },
-    TEST: { label: 'Test', class: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },
+    DEVELOPMENT: { label: 'Dev', class: 'bg-info-bg text-info border-info-border' },
+    BUG: { label: 'Bug', class: 'bg-destructive-bg text-destructive border-destructive-border' },
+    DESIGN: { label: 'Design', class: 'bg-primary-ghost text-primary border-primary/20' },
+    DOCUMENTATION: { label: 'Docs', class: 'bg-cyan-dim text-cyan border-cyan-border' },
+    TEST: { label: 'Test', class: 'bg-warning-bg text-warning border-warning-border' },
     OTHER: { label: 'Autre', class: 'bg-muted text-muted-foreground border-border' },
 } as const;
 

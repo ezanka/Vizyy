@@ -65,9 +65,8 @@ export default function Timeline({ timeline, members, updates, projectId, author
     const [endDate, setEndDate] = React.useState<Date | null>(null)
     const [updateId, setUpdateId] = React.useState<string>("")
     const [assignedTo, setAssignedTo] = React.useState<MemberWithUser | null>(null)
-    const [timelineId, setTimelineId] = React.useState<string>("")
     const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
-    const [isUpdateSheetOpen, setIsUpdateSheetOpen] = React.useState(false);
+    const [openSheetId, setOpenSheetId] = React.useState<string | null>(null);
 
     const resetForm = () => {
         setIsCreateDialogOpen(false);
@@ -82,7 +81,7 @@ export default function Timeline({ timeline, members, updates, projectId, author
         setName(name);
         setStartDate(startDate);
         setEndDate(endDate);
-        setTimelineId(timelineId);
+        setOpenSheetId(timelineId);
         setUpdateId(updateId ?? "");
         setAssignedTo(assignedTo);
     }
@@ -381,7 +380,7 @@ export default function Timeline({ timeline, members, updates, projectId, author
                             if (!authorized) {
                                 return (
                                     <React.Fragment key={event.id}>
-                                        <Sheet open={isUpdateSheetOpen && timelineId === event.id} onOpenChange={setIsUpdateSheetOpen}>
+                                        <Sheet open={openSheetId === event.id} onOpenChange={(open) => setOpenSheetId(open ? event.id : null)}>
                                             <SheetTrigger asChild>
                                                 <div
                                                     className="absolute h-10 bg-primary hover:bg-primary/90 transition-all rounded-lg cursor-pointer group overflow-hidden"
@@ -553,7 +552,7 @@ export default function Timeline({ timeline, members, updates, projectId, author
 
                             return (
                                 <React.Fragment key={event.id}>
-                                    <Sheet open={isUpdateSheetOpen && timelineId === event.id} onOpenChange={setIsUpdateSheetOpen}>
+                                    <Sheet open={openSheetId === event.id} onOpenChange={(open) => setOpenSheetId(open ? event.id : null)}>
                                         <SheetTrigger asChild>
                                             <div
                                                 className="absolute h-10 bg-primary hover:bg-primary/90 transition-all rounded-lg cursor-pointer group overflow-hidden"
@@ -707,8 +706,8 @@ export default function Timeline({ timeline, members, updates, projectId, author
                                             </div>
                                             <SheetFooter>
                                                 <div className="flex items-center justify-between gap-2 flex-1 w-full">
-                                                    <UpdateTimelineButton projectId={projectId} name={name} startDate={startDate!} endDate={endDate!} updateId={updateId} timelineId={timelineId} assignedTo={assignedTo?.user?.id || undefined} onSuccess={() => setIsUpdateSheetOpen(false)} />
-                                                    <DeleteTimelineButton projectId={projectId} timelineId={timelineId} onSuccess={() => setIsUpdateSheetOpen(false)} />
+                                                    <UpdateTimelineButton projectId={projectId} name={name} startDate={startDate!} endDate={endDate!} updateId={updateId} timelineId={event.id} assignedTo={assignedTo?.user?.id || undefined} onSuccess={() => setOpenSheetId(null)} />
+                                                    <DeleteTimelineButton projectId={projectId} timelineId={event.id} onSuccess={() => setOpenSheetId(null)} />
                                                 </div>
                                                 <SheetClose asChild>
                                                     <Button variant="outline">Fermer</Button>

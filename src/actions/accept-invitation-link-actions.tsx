@@ -21,17 +21,12 @@ export async function acceptInvitationLink(invitationId: string, projectId: stri
         return { error: "Invitation non trouvée" };
     }
 
-    const joinerEmail = await prisma.user.findUnique({
-        where: {
-            id: user.id,
-        },
-        select: { 
-            email: true,
-        }
-    });
+    if (invitation.status === InvitationStatus.ACCEPTED) {
+        return { error: "Cette invitation a déjà été utilisée" };
+    }
 
-    if (!joinerEmail) {
-        return { error: "Utilisateur non trouvé" };
+    if (invitation.expiresAt && invitation.expiresAt < new Date()) {
+        return { error: "Cette invitation a expiré" };
     }
 
     const existingMember = await prisma.member.findFirst({

@@ -1,8 +1,4 @@
 import {
-    SidebarFooter,
-} from "@/src/components/ui/shadcn/sidebar"
-import {
-    Settings,
     LogOut,
     ChevronsUpDown,
     Sparkles,
@@ -39,7 +35,7 @@ export default function FooterSidebar({ userName, userEmail, userInitial, projec
             <DropdownMenuTrigger className="w-full">
                 <div className="p-2 cursor-pointer hover:bg-border/50 rounded-sm flex items-center justify-between bg-border/30 border">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-linear-to-br from-purple-500 to-pink-500 text-white font-semibold">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary-ghost border border-primary/20 text-primary font-semibold">
                             {userInitial}
                         </div>
                         <div className="flex-1 min-w-0 text-left">
@@ -53,7 +49,7 @@ export default function FooterSidebar({ userName, userEmail, userInitial, projec
             <DropdownMenuContent side="right" className="mt-2">
                 <DropdownMenuLabel>
                     <div className="flex items-center gap-3">
-                        <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-linear-to-br from-purple-500 to-pink-500 text-white font-semibold">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary-ghost border border-primary/20 text-primary font-semibold">
                             {userInitial}
                         </div>
                         <div className="flex-1 min-w-0 text-left">

@@ -2,7 +2,6 @@ import { getUser } from "@/src/lib/auth-server";
 import { SidebarProvider } from "@/src/components/ui/shadcn/sidebar"
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { toast } from "sonner";
 
 export default async function Layout({
     children,

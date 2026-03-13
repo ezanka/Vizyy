@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { DragDropProvider } from '@dnd-kit/react';
 import { move } from '@dnd-kit/helpers';
 import { ListPlus, Plus } from 'lucide-react';
-import { Column } from '@/src/components/todos/column';
+import { Column, ColumnAccent } from '@/src/components/todos/column';
 import { Item } from '@/src/components/todos/items';
 import { Button } from '@/src/components/ui/shadcn/button';
 import { TodoStatus } from "@/src/generated/prisma/enums";
@@ -23,13 +23,13 @@ const sortByPriority = (todos: TodoWithAssignee[]) =>
         (PRIORITY_ORDER[b.priority as keyof typeof PRIORITY_ORDER] ?? 99)
     );
 
-const COLUMNS: Record<string, { label: string; accent: string }> = {
-    [TodoStatus.TODO]: { label: 'À faire', accent: 'bg-blue-500' },
-    [TodoStatus.IN_PROGRESS]: { label: 'En cours', accent: 'bg-amber-500' },
-    [TodoStatus.DONE]: { label: 'Terminé', accent: 'bg-green-500' },
+const COLUMNS: Record<string, { label: string; accent: ColumnAccent }> = {
+    [TodoStatus.TODO]: { label: 'À faire', accent: 'info' },
+    [TodoStatus.IN_PROGRESS]: { label: 'En cours', accent: 'warning' },
+    [TodoStatus.DONE]: { label: 'Terminé', accent: 'success' },
 };
 
-type ItemsState = { [TodoStatus.TODO]: string[]; [TodoStatus.IN_PROGRESS]: string[]; [TodoStatus.DONE]: string[] };
+type ItemsState = { [TodoStatus.TODO]: string[];[TodoStatus.IN_PROGRESS]: string[];[TodoStatus.DONE]: string[] };
 type PendingUpdate = { todoId: string; column: TodoStatus; snapshot: ItemsState };
 
 export default function TodosTable({
@@ -42,9 +42,9 @@ export default function TodosTable({
     authorized?: boolean;
 }) {
     const [items, setItems] = useState({
-        [TodoStatus.TODO]:        sortByPriority(todos.filter(t => t.status === TodoStatus.TODO)).map(t => t.id),
+        [TodoStatus.TODO]: sortByPriority(todos.filter(t => t.status === TodoStatus.TODO)).map(t => t.id),
         [TodoStatus.IN_PROGRESS]: sortByPriority(todos.filter(t => t.status === TodoStatus.IN_PROGRESS)).map(t => t.id),
-        [TodoStatus.DONE]:        sortByPriority(todos.filter(t => t.status === TodoStatus.DONE)).map(t => t.id),
+        [TodoStatus.DONE]: sortByPriority(todos.filter(t => t.status === TodoStatus.DONE)).map(t => t.id),
     });
 
     const [pendingUpdate, setPendingUpdate] = useState<PendingUpdate | null>(null);

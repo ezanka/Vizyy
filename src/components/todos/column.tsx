@@ -14,6 +14,9 @@ interface ColumnProps {
     accent: string;
 }
 
+export type ColumnAccent = 'info' | 'warning' | 'success' | 'destructive' | 'primary' | 'muted';
+
+
 export function Column({ children, id, label, count, accent }: ColumnProps) {
     const { isDropTarget, ref } = useDroppable({
         id,

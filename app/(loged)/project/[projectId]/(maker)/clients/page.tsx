@@ -52,9 +52,16 @@ export default async function ClientsPage({
     });
 
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Clients</h1>
-            <p>Contenu de la page des clients.</p>
+        <div className="flex flex-col gap-6 my-4">
+                <div className="flex flex-col gap-1">
+                    <p className="text-xs font-bold uppercase tracking-widest text-foreground-subtle">
+                        Projet
+                    </p>
+                    <h1 className="text-2xl font-extrabold tracking-tight">Clients</h1>
+                    <p className="text-sm text-foreground-muted">
+                        {clients.length} {clients.length > 1 ? 'clients' : 'client'}
+                    </p>
+                </div>
             <ClientTable clients={clients.map(client => client.user)} isMaker={isMaker} projectId={projectId} />
             <Separator className="my-4" />
             <ClientInvitationTable invitations={invitations} projectId={projectId} />

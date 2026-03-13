@@ -87,7 +87,7 @@ export default async function UpdatePage({
         <div className="flex flex-col gap-6 my-4">
 
             <div className="flex items-center gap-3">
-                <Button variant="outline" size="icon" asChild className="size-8 border-border-md hover:border-border-hi shrink-0">
+                <Button variant="outline" size="icon" aria-label="Retour aux updates" asChild className="size-8 border-border-md hover:border-border-hi shrink-0">
                     <Link href={`/project/${projectId}/updates`}>
                         <ArrowLeft size={15} />
                     </Link>
@@ -110,7 +110,7 @@ export default async function UpdatePage({
                                     {update.title}
                                 </h2>
                                 {!isClient && !update.valid ? (
-                                    <Button size="icon" variant="ghost" asChild
+                                    <Button size="icon" aria-label="Modifier l'update" variant="ghost" asChild
                                         className="size-8 text-foreground-subtle hover:text-foreground shrink-0">
                                         <Link href={`/project/${projectId}/updates/${updateId}/edit`}>
                                             <Pencil size={14} />

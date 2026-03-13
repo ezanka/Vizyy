@@ -2,7 +2,7 @@
 
 import { Update, User } from "@/src/generated/prisma/client";
 import { Button } from "@/src/components/ui/shadcn/button";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { TodoType, TodoStatus, TodoPriority } from "@/src/generated/prisma/enums"
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 export default function CreateTodoButton({ projectId, title, description, type, status, priority, assignedTo, update, authorized }: { projectId: string, title: string, description: string, type: TodoType, status: TodoStatus, priority: TodoPriority, assignedTo?: User, update?: Update, authorized: boolean }) {
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const router = useRouter();
 
     const handleCreateTodo = async () => {
         setIsLoading(true);
@@ -41,7 +42,7 @@ export default function CreateTodoButton({ projectId, title, description, type, 
             return;
         }
 
-        redirect(`/project/${projectId}/todos`);
+        router.push(`/project/${projectId}/todos`);
     }
 
     return (

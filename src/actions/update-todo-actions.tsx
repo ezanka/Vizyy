@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { TodoStatus, TodoType, TodoPriority } from "@/src/generated/prisma/enums";
 import { Task, Update, User } from "../generated/prisma/client";
 import { z } from "zod";
+import { isMaker } from "./is-maker-actions";
 
 export async function updateTodo(
     projectId: string,
@@ -23,6 +24,12 @@ export async function updateTodo(
 
     if (!user) {
         return { error: "Vous devez être connecté pour modifier une todo" };
+    }
+
+    const imMaker = (await isMaker(projectId)).isMaker;
+
+    if (!imMaker) {
+        return { error: "Vous n'avez pas les permissions pour modifier ce todo" };
     }
 
     const schema = z.object({

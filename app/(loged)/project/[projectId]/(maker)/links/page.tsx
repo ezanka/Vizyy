@@ -53,7 +53,13 @@ export default async function LinksPage({
     });
 
     return (
-        <div className="p-4">
+        <div className="flex flex-col gap-6 my-4">
+            <div className="flex flex-col gap-1">
+                <p className="text-xs font-bold uppercase tracking-widest text-foreground-subtle">
+                    Projet
+                </p>
+                <h1 className="text-2xl font-extrabold tracking-tight">Liens</h1>
+            </div>
             <LinkTable invitationLinks={invitationLinks} pendingInvitations={pendingInvitations} projectId={projectId} />
         </div>
     )

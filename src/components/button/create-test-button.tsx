@@ -2,7 +2,7 @@
 
 import { Update } from "@/src/generated/prisma/client";
 import { Button } from "@/src/components/ui/shadcn/button";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { createTest } from "@/src/actions/create-test-actions";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 export default function CreateTestButton({ projectId, name, actions, results, type, environment, statut, update, authorized }: { projectId: string, name: string, actions: string, results: string, type: TestType, environment: TestEnvironment, statut: TestStatus, update?: Update, authorized: boolean }) {
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const router = useRouter();
 
     const handleCreateTest = () => {
         setIsLoading(true);
@@ -53,7 +54,7 @@ export default function CreateTestButton({ projectId, name, actions, results, ty
             return;
         }
 
-        redirect(`/project/${projectId}/test`);
+        router.push(`/project/${projectId}/test`);
     }
 
     return (

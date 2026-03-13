@@ -14,8 +14,16 @@ interface ColumnProps {
     accent: string;
 }
 
-export type ColumnAccent = 'info' | 'warning' | 'success' | 'destructive' | 'primary' | 'muted';
+const accentMap: Record<ColumnAccent, string> = {
+    info: 'bg-info',
+    warning: 'bg-warning',
+    success: 'bg-success',
+    destructive: 'bg-destructive',
+    primary: 'bg-primary',
+    muted: 'bg-muted',
+};
 
+export type ColumnAccent = 'info' | 'warning' | 'success' | 'destructive' | 'primary' | 'muted';
 
 export function Column({ children, id, label, count, accent }: ColumnProps) {
     const { isDropTarget, ref } = useDroppable({
@@ -34,7 +42,7 @@ export function Column({ children, id, label, count, accent }: ColumnProps) {
             ref={ref}
         >
             <div className="px-4 py-3 border-b border-border flex items-center gap-2">
-                <div className={cn("size-2 rounded-full shrink-0", accent)} />
+                <div className={cn("size-2 rounded-full", accentMap[accent as ColumnAccent])} />
                 <span className="font-semibold text-sm">{label}</span>
                 <Badge variant="secondary" className="ml-auto">{count}</Badge>
             </div>

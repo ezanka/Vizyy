@@ -55,7 +55,7 @@ export default function TodosTable({
         const { todoId, column, snapshot } = pendingUpdate;
         setPendingUpdate(null);
         updateTodoStatus(projectId, todoId, column).catch(() => setItems(snapshot));
-    }, [pendingUpdate]);
+    }, [pendingUpdate, projectId]);
 
     const total = Object.values(items).flat().length;
 

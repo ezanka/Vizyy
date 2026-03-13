@@ -3,6 +3,7 @@
 import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
+import { isMaker } from "./is-maker-actions";
 
 export async function deleteTest(projectId: string, testId: string) {
     const user = await getUser();
@@ -11,16 +12,9 @@ export async function deleteTest(projectId: string, testId: string) {
         return { error: "Vous devez être connecté pour créer un test" };
     }
 
-    const isMember = await prisma.member.findUnique({
-        where: {
-            userId_organizationId: {
-                userId: user.id,
-                organizationId: projectId,
-            },
-        },
-    });
+    const imMaker = (await isMaker(projectId)).isMaker;
 
-    if (!isMember) {
+    if (!imMaker) {
         return { error: "Vous n'avez pas les permissions pour supprimer ce test" };
     }
 

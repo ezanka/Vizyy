@@ -289,27 +289,27 @@ export function TestTable({ tests, projectId, updates, authorized }: {
             cell: ({ row }) => (
                 <div className="capitalize">
                     {row.getValue("type") === TestType.UNIT ? (
-                        <span className="flex items-center"><Box className="w-4 h-4 mr-1 text-gray-500" /> Unit</span>
+                        <span className="flex items-center"><Box className="w-4 h-4 mr-1 text-foreground-subtle" /> Unit</span>
                     ) : row.getValue("type") === TestType.INTEGRATION ? (
-                        <span className="flex items-center"><GitMerge className="w-4 h-4 mr-1 text-gray-500" /> Intégration</span>
+                        <span className="flex items-center"><GitMerge className="w-4 h-4 mr-1 text-foreground-subtle" /> Intégration</span>
                     ) : row.getValue("type") === TestType.FUNCTIONAL ? (
-                        <span className="flex items-center"><ListChecks className="w-4 h-4 mr-1 text-gray-500" /> Fonctionnel</span>
+                        <span className="flex items-center"><ListChecks className="w-4 h-4 mr-1 text-foreground-subtle" /> Fonctionnel</span>
                     ) : row.getValue("type") === TestType.ACCEPTANCE ? (
-                        <span className="flex items-center"><ClipboardCheck className="w-4 h-4 mr-1 text-gray-500" /> Recette</span>
+                        <span className="flex items-center"><ClipboardCheck className="w-4 h-4 mr-1 text-foreground-subtle" /> Recette</span>
                     ) : row.getValue("type") === TestType.E2E ? (
-                        <span className="flex items-center"><MonitorCheck className="w-4 h-4 mr-1 text-gray-500" /> E2E</span>
+                        <span className="flex items-center"><MonitorCheck className="w-4 h-4 mr-1 text-foreground-subtle" /> E2E</span>
                     ) : row.getValue("type") === TestType.PERFORMANCE ? (
-                        <span className="flex items-center"><Gauge className="w-4 h-4 mr-1 text-gray-500" /> Performance</span>
+                        <span className="flex items-center"><Gauge className="w-4 h-4 mr-1 text-foreground-subtle" /> Performance</span>
                     ) : row.getValue("type") === TestType.REGRESSION ? (
-                        <span className="flex items-center"><RefreshCcw className="w-4 h-4 mr-1 text-gray-500" /> Régression</span>
+                        <span className="flex items-center"><RefreshCcw className="w-4 h-4 mr-1 text-foreground-subtle" /> Régression</span>
                     ) : row.getValue("type") === TestType.STRESS ? (
-                        <span className="flex items-center"><Zap className="w-4 h-4 mr-1 text-gray-500" /> Stress</span>
+                        <span className="flex items-center"><Zap className="w-4 h-4 mr-1 text-foreground-subtle" /> Stress</span>
                     ) : row.getValue("type") === TestType.CONFIGURATION ? (
-                        <span className="flex items-center"><Settings className="w-4 h-4 mr-1 text-gray-500" /> Configuration</span>
+                        <span className="flex items-center"><Settings className="w-4 h-4 mr-1 text-foreground-subtle" /> Configuration</span>
                     ) : row.getValue("type") === TestType.UI ? (
-                        <span className="flex items-center"><Layers className="w-4 h-4 mr-1 text-gray-500" /> Interface</span>
+                        <span className="flex items-center"><Layers className="w-4 h-4 mr-1 text-foreground-subtle" /> Interface</span>
                     ) : row.getValue("type") === TestType.OTHER ? (
-                        <span className="flex items-center"><FlaskConical className="w-4 h-4 mr-1 text-gray-500" /> Autre</span>
+                        <span className="flex items-center"><FlaskConical className="w-4 h-4 mr-1 text-foreground-subtle" /> Autre</span>
                     ) : null}
                 </div>
             ),
@@ -325,9 +325,9 @@ export function TestTable({ tests, projectId, updates, authorized }: {
             filterFn: (row, columnId, filterValue: TestStatus[]) => filterValue.includes(row.getValue(columnId)),
             cell: ({ row }) => (
                 <div>
-                    {row.getValue("status") === TestStatus.PENDING ? <span className="flex items-center"><Clock className="w-4 h-4 mr-1 text-amber-500" /> En attente</span> :
-                        row.getValue("status") === TestStatus.FAILED ? <span className="flex items-center"><CircleX className="w-4 h-4 mr-1 text-red-500" /> Échoué</span> :
-                            row.getValue("status") === TestStatus.PASSED ? <span className="flex items-center"><CircleCheck className="w-4 h-4 mr-1 text-green-500" /> Réussi</span> : ""}
+                    {row.getValue("status") === TestStatus.PENDING ? <span className="flex items-center"><Clock className="w-4 h-4 mr-1 text-warning" /> En attente</span> :
+                        row.getValue("status") === TestStatus.FAILED ? <span className="flex items-center"><CircleX className="w-4 h-4 mr-1 text-destructive" /> Échoué</span> :
+                            row.getValue("status") === TestStatus.PASSED ? <span className="flex items-center"><CircleCheck className="w-4 h-4 mr-1 text-success" /> Réussi</span> : ""}
                 </div>
             ),
         },
@@ -351,7 +351,7 @@ export function TestTable({ tests, projectId, updates, authorized }: {
             cell: ({ row }) => (
                 <div className="capitalize">
                     {!row.getValue("passedAt")
-                        ? <span className="text-gray-500">Non réalisé</span>
+                        ? <span className="text-foreground-subtle">Non réalisé</span>
                         : format(new Date(row.getValue("passedAt") as string | Date), "Pp", { locale: fr })}
                 </div>
             ),
@@ -366,7 +366,7 @@ export function TestTable({ tests, projectId, updates, authorized }: {
                 return (
                     <div className="capitalize">
                         {!row.getValue("passedById")
-                            ? <span className="text-gray-500">Non réalisé</span>
+                            ? <span className="text-foreground-subtle">Non réalisé</span>
                             : updatedBy?.user?.name ?? row.getValue("passedById")}
                     </div>
                 );

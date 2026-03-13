@@ -2,7 +2,7 @@
 
 import { Update } from "@/src/generated/prisma/client";
 import { Button } from "@/src/components/ui/shadcn/button";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { updateTest } from "@/src/actions/update-test-actions";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 export default function UpdateTestButton({ projectId, name, type, statut, actions, results, environment, update, authorized, test }: { projectId: string, name: string, type: TestType, statut: TestStatus, actions: string, results: string, environment: TestEnvironment, update?: Update, authorized: boolean, test: { id: string } }) {
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const router = useRouter();
 
     const handleUpdateTest = () => {
         setIsLoading(true);
@@ -34,7 +35,7 @@ export default function UpdateTestButton({ projectId, name, type, statut, action
             return;
         }
 
-        redirect(`/project/${projectId}/test`);
+        router.push(`/project/${projectId}/test`);
     }
 
     return (

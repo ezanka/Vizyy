@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/src/components/ui/shadcn/button";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { deleteUpdate } from "@/src/actions/delete-update-actions";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 export default function DeleteUpdateButton({ projectId, updateId, authorized }: { projectId: string, updateId: string, authorized: boolean }) {
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const router = useRouter();
 
     const handleDeleteUpdate = () => {
         setIsLoading(true);
@@ -23,7 +24,7 @@ export default function DeleteUpdateButton({ projectId, updateId, authorized }: 
             return;
         }
 
-        redirect(`/project/${projectId}/updates`);
+        router.push(`/project/${projectId}/updates`);
     }
 
     return (

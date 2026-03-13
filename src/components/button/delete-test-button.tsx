@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/src/components/ui/shadcn/button";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { deleteTest } from "@/src/actions/delete-test-actions";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 export default function DeleteTestButton({ projectId, authorized, test }: { projectId: string, authorized: boolean, test: { id: string } }) {
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const router = useRouter();
 
     const handleDeleteTest = () => {
         setIsLoading(true);
@@ -28,7 +29,7 @@ export default function DeleteTestButton({ projectId, authorized, test }: { proj
             return;
         }
 
-        redirect(`/project/${projectId}/test`);
+        router.push(`/project/${projectId}/test`);
     }
 
     return (

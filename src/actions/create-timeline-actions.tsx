@@ -5,12 +5,19 @@ import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
 import { z } from "zod";
+import { isMaker } from "./is-maker-actions";
 
 export async function createTimeline(projectId: string, name: string, startDate: Date, endDate: Date, updateId?: string, assignedTo?: string) {
     const user = await getUser();
 
     if (!user) {
         return { error: "Vous devez être connecté pour créer un projet" };
+    }
+
+    const imMaker = await isMaker(projectId);
+
+    if (!imMaker) {
+        return { error: "Vous n'avez pas les permissions pour créer une timeline dans ce projet" };
     }
 
     const schema = z.object({

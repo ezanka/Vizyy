@@ -30,6 +30,17 @@ export async function deleteTimeline(projectId: string, timelineId: string) {
         return { error: "Vous n'êtes pas autorisé à modifier cette timeline" };
     }
 
+    const timelineIsInProject = await prisma.timeline.findFirst({
+        where: {
+            id: timelineId,
+            organizationId: projectId,
+        },
+    });
+
+    if (!timelineIsInProject) {
+        return { error: "La timeline n'appartient pas au projet" };
+    }
+
     await prisma.timeline.delete({
         where: {
             id: timelineId

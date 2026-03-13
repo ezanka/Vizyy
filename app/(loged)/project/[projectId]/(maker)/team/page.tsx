@@ -16,7 +16,7 @@ export default async function TeamPage({
     params: Promise<Params>;
 }) {
     const { projectId } = await params;
-    
+
     const project = await prisma.organization.findUnique({
         where: {
             id: projectId,
@@ -48,9 +48,16 @@ export default async function TeamPage({
     });
 
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Équipe</h1>
-            <p>Créateur dans l'équipe.</p>
+        <div className="flex flex-col gap-6 my-4">
+            <div className="flex flex-col gap-1">
+                <p className="text-xs font-bold uppercase tracking-widest text-foreground-subtle">
+                    Projet
+                </p>
+                <h1 className="text-2xl font-extrabold tracking-tight">Équipe</h1>
+                <p className="text-sm text-foreground-muted">
+                    {makers.length} {makers.length > 1 ? 'makers' : 'maker'}
+                </p>
+            </div>
             <TeamTable makers={makers.map(maker => maker.user)} projectId={projectId} ownerId={project?.ownerId} />
             <Separator className="my-4" />
             <TeamInvitationTable invitations={invitations} projectId={projectId} />

@@ -3,7 +3,7 @@
 import { updateUpdate } from "@/src/actions/update-update-action";
 import { Button } from "@/src/components/ui/shadcn/button";
 import type { UpdateStatus, UpdateType } from "@/src/generated/prisma/enums";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { Spinner } from "../ui/shadcn/spinner";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 export default function UpdateUpdateButton({ projectId, updateId, title, content, type, statut, needvalidation, previewLink, timeSpent, progress }: { projectId: string, updateId: string, title: string, content: string, type: UpdateType, statut: UpdateStatus, needvalidation: boolean, previewLink: string, timeSpent?: number, progress: number }) {
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const router = useRouter();
 
     const handleUpdateUpdate = () => {
         setIsLoading(true);
@@ -26,7 +27,7 @@ export default function UpdateUpdateButton({ projectId, updateId, title, content
             setIsLoading(false);
             return;
         }
-        redirect(`/project/${projectId}/updates/${updateId}`);
+        router.push(`/project/${projectId}/updates/${updateId}`);
     }
 
     return (

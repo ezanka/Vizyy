@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/src/components/ui/shadcn/button";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { deleteTodo } from "@/src/actions/delete-todo-actions";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 export default function DeleteTodoButton({ projectId, todoId, authorized }: { projectId: string, todoId: string, authorized: boolean }) {
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const router = useRouter();
 
     const handleDeleteTodo = async () => {
         setIsLoading(true);
@@ -28,7 +29,7 @@ export default function DeleteTodoButton({ projectId, todoId, authorized }: { pr
             return;
         }
 
-        redirect(`/project/${projectId}/todos`);
+        router.push(`/project/${projectId}/todos`);
     }
 
     return (

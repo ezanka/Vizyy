@@ -61,7 +61,7 @@ export default function EditProfileForm({
             </div>
 
             {message && (
-                <p className={message.type === "success" ? "text-sm text-green-500" : "text-sm text-red-500"}>
+                <p className={message.type === "success" ? "text-sm text-success" : "text-sm text-destructive"}>
                     {message.text}
                 </p>
             )}

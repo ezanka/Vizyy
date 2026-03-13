@@ -24,9 +24,7 @@ export default async function DashboardPage({
     const { projectId } = await params;
 
     const projectInfo = await prisma.organization.findUnique({
-        where: {
-            id: projectId,
-        },
+        where: { id: projectId },
         include: {
             members: { include: { user: true } },
             updates: true,
@@ -35,18 +33,9 @@ export default async function DashboardPage({
 
     const authorized = (await isMaker(projectId)).isMaker;
 
-    const clientMembers = projectInfo?.members.filter(
+    const clientsWithInfo = projectInfo?.members.filter(
         (m) => m.role === MemberRole.CLIENT
     ) ?? [];
-
-    const clientsWithInfo = await Promise.all(
-        clientMembers.map(async (member) => {
-            const memberInfo = await prisma.user.findUnique({
-                where: { id: member.userId },
-            });
-            return { member, memberInfo };
-        })
-    );
 
     return (
         <div className="flex flex-col gap-4 my-4">
@@ -62,7 +51,7 @@ export default async function DashboardPage({
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" style={{ background: "radial-gradient(ellipse at top left, var(--primary-ghost), transparent 60%)" }} />
                     <CardHeader className="pb-2">
                         <div className="flex items-start justify-between">
-                            <CardDescription className="text-[10.5px] font-bold tracking-windest uppercase">Updates publiées</CardDescription>
+                            <CardDescription className="text-[10.5px] font-bold tracking-widest uppercase">Updates publiées</CardDescription>
                             <div className="size-9 rounded-[6px] grid place-items-center border border-border-md bg-popover text-foreground-muted">
                                 <MessageSquare size={16} />
                             </div>
@@ -79,7 +68,7 @@ export default async function DashboardPage({
                 <Card className="border-border bg-card group hover:border-border-hi hover:shadow-2xl transition-all flex justify-between">
                     <CardHeader className="pb-2">
                         <div className="flex items-start justify-between">
-                            <CardDescription className="text-[10.5px] font-bold tracking-windest uppercase">Tests</CardDescription>
+                            <CardDescription className="text-[10.5px] font-bold tracking-widest uppercase">Tests</CardDescription>
                             <Badge className="bg-success-bg text-success border-success-border text-[10px]">6 / 8</Badge>
                         </div>
                     </CardHeader>
@@ -93,7 +82,7 @@ export default async function DashboardPage({
                 <Card className="border-border bg-card group hover:border-border-hi hover:shadow-2xl transition-all overflow-hidden relative">
                     <CardHeader className="pb-2">
                         <div className="flex items-start justify-between">
-                            <CardDescription className="text-[10.5px] font-bold tracking-windest uppercase">Deadline</CardDescription>
+                            <CardDescription className="text-[10.5px] font-bold tracking-widest uppercase">Deadline</CardDescription>
                             <div className="size-9 rounded-[6px] grid place-items-center border border-border-md bg-popover text-foreground-muted">
                                 <CalendarDays size={16} />
                             </div>
@@ -125,7 +114,7 @@ export default async function DashboardPage({
                 <Card className="border-border bg-card group hover:border-border-hi hover:shadow-2xl transition-all">
                     <CardHeader className="pb-2">
                         <div className="flex items-start justify-between">
-                            <CardDescription className="text-[10.5px] font-bold tracking-windest uppercase">Progression</CardDescription>
+                            <CardDescription className="text-[10.5px] font-bold tracking-widest uppercase">Progression</CardDescription>
                             <Badge variant="outline" className="text-[10px]">{projectInfo?.progress || 0}%</Badge>
                         </div>
                     </CardHeader>
@@ -149,22 +138,22 @@ export default async function DashboardPage({
                     </Link>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                    {clientsWithInfo.map(({ member, memberInfo }) => (
+                    {clientsWithInfo.map((member) => (
                         <Card key={member.id} className="flex items-center gap-3.5 px-4.5 py-3.25 rounded-xl border cursor-default hover:brightness-110 transition-all">
                             <CardContent className="px-2 flex items-center gap-4 justify-between w-full">
                                 <div className="flex-1 flex items-center gap-3.5 px-2 py-1">
                                     <div className="size-8 rounded-lg grid place-items-center text-[13px] shrink-0 text-foreground bg-popover">
-                                        {memberInfo?.name.split(" ").map(n => n[0]).join("")}
+                                        {member.user.name.split(" ").map(n => n[0]).join("")}
                                     </div>
                                     <div className="flex-1">
-                                        <span className="text-[12.5px] font-bold block text-foreground">{memberInfo?.name}</span>
+                                        <span className="text-[12.5px] font-bold block text-foreground">{member.user.name}</span>
                                         <span className="text-[11px] text-foreground-subtle">
-                                            {memberInfo?.company ?? "Entreprise inconnue"}
+                                            {member.user.company ?? "Entreprise inconnue"}
                                         </span>
                                     </div>
                                 </div>
-                                <Button variant="secondary" size="sm">
-                                    <Link href={`mailto:${memberInfo?.email}`}>Contacter</Link>
+                                <Button variant="secondary" size="sm" asChild>
+                                    <Link href={`mailto:${member.user.email}`}>Contacter</Link>
                                 </Button>
                             </CardContent>
                         </Card>

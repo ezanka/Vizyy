@@ -5,6 +5,7 @@ import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
 import { MemberRole } from "../generated/prisma/enums";
+import { z } from "zod";
 
 function generateSlug(length: number = 15): string {
     const letters = 'abcdefghijklmnopqrstuvwxyz';
@@ -24,6 +25,14 @@ export async function createProject(name: string, logo: string, deadline: Date |
     if (!user) {
         return { error: "Vous devez être connecté pour créer un projet" };
     }
+
+    const schema = z.object({
+        name: z.string().min(1).max(100),
+        logo: z.string().max(500).optional().or(z.literal("")),
+        progress: z.number().int().min(0).max(100),
+    });
+    const parsed = schema.safeParse({ name, logo, progress });
+    if (!parsed.success) return { error: "Données invalides" };
 
     const newProject = await prisma.organization.create({
         data: {

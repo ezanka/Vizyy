@@ -4,6 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { MemberRole } from "../generated/prisma/enums";
+import { z } from "zod";
 
 export async function updateProject(
     projectId: string,
@@ -29,6 +30,14 @@ export async function updateProject(
     if (!member) {
         return { error: "Vous n'avez pas les droits pour modifier ce projet" };
     }
+
+    const schema = z.object({
+        name: z.string().min(1).max(100),
+        logo: z.string().max(500).optional().or(z.literal("")),
+        progress: z.number().int().min(0).max(100),
+    });
+    const parsed = schema.safeParse({ name, logo, progress });
+    if (!parsed.success) return { error: "Données invalides" };
 
     await prisma.organization.update({
         where: { id: projectId },

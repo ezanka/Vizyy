@@ -21,11 +21,15 @@ export async function acceptInvitation(invitationId: string, projectId: string) 
         return { error: "Invitation non trouvée" };
     }
 
+    if (!invitation || invitation.status !== InvitationStatus.PENDING || invitation.expiresAt < new Date()) {
+        return { error: "Invitation invalide ou expirée" };
+    }
+
     const joinerEmail = await prisma.user.findUnique({
         where: {
             id: user.id,
         },
-        select: { 
+        select: {
             email: true,
         }
     });

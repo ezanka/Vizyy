@@ -3,8 +3,9 @@
 import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
-import type { TodoStatus, TodoType, TodoPriority } from "@/src/generated/prisma/enums";
+import { TodoStatus, TodoType, TodoPriority } from "@/src/generated/prisma/enums";
 import { Task, Update, User } from "../generated/prisma/client";
+import { z } from "zod";
 
 export async function updateTodo(
     projectId: string,
@@ -23,6 +24,16 @@ export async function updateTodo(
     if (!user) {
         return { error: "Vous devez être connecté pour modifier une todo" };
     }
+
+    const schema = z.object({
+        title: z.string().min(1).max(150),
+        description: z.string().max(1000),
+        type: z.enum(TodoType),
+        status: z.enum(TodoStatus),
+        priority: z.enum(TodoPriority),
+    });
+    const parsed = schema.safeParse({ title, description, type, status, priority });
+    if (!parsed.success) return { error: "Données invalides" };
 
     await prisma.todo.update({
         where: { id: todoId },

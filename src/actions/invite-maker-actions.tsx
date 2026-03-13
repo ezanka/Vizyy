@@ -4,6 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getUser } from "@/src/lib/auth-server";
 import { revalidatePath } from "next/cache";
 import { MemberRole } from "../generated/prisma/enums";
+import { z } from "zod";
 
 export async function inviteMaker(email: string, projectId: string) {
     const user = await getUser();
@@ -11,6 +12,10 @@ export async function inviteMaker(email: string, projectId: string) {
     if (!user) {
         return { error: "Vous devez être connecté pour créer un projet" };
     }
+
+    const schema = z.object({ email: z.email() });
+    const parsed = schema.safeParse({ email });
+    if (!parsed.success) return { error: "Adresse email invalide" };
 
     const authorized = await prisma.member.findFirst({
         where: {

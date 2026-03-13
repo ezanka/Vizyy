@@ -6,6 +6,7 @@ import type { UpdateStatus, UpdateType } from "@/src/generated/prisma/enums";
 import { redirect } from "next/navigation";
 import React from "react";
 import { Spinner } from "../ui/shadcn/spinner";
+import { toast } from "sonner";
 
 export default function UpdateUpdateButton({ projectId, updateId, title, content, type, statut, needvalidation, previewLink, timeSpent, progress }: { projectId: string, updateId: string, title: string, content: string, type: UpdateType, statut: UpdateStatus, needvalidation: boolean, previewLink: string, timeSpent?: number, progress: number }) {
 
@@ -14,14 +15,14 @@ export default function UpdateUpdateButton({ projectId, updateId, title, content
     const handleUpdateUpdate = () => {
         setIsLoading(true);
         if (!title || !content) {
-            alert("Le titre et le contenu sont obligatoires.");
+            toast.error("Le titre et le contenu sont obligatoires.");
             setIsLoading(false);
             return;
         }
 
         const result = updateUpdate(projectId, updateId, title, content, type, statut, needvalidation, previewLink, progress, timeSpent);
         if (!result) {
-            alert("Une erreur est survenue lors de la mise à jour de l'update");
+            toast.error("Une erreur est survenue lors de la mise à jour de l'update");
             setIsLoading(false);
             return;
         }

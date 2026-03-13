@@ -5,6 +5,7 @@ import { Button } from "@/src/components/ui/shadcn/button";
 import { redirect } from "next/navigation";
 import React from "react";
 import { Spinner } from "../ui/shadcn/spinner";
+import { toast } from "sonner";
 
 export default function CreateFeedbackButton({ projectName, selectedLogo, deadline, progress }: { projectName: string, selectedLogo: string, deadline: Date | undefined, progress: number }) {
 
@@ -13,9 +14,9 @@ export default function CreateFeedbackButton({ projectName, selectedLogo, deadli
     async function handleCreateProject() {
         setIsLoading(true);
         const result = createProject(projectName, selectedLogo, deadline, progress);
-        
-        if(!result) {
-            alert("Une erreur est survenue lors de la création du projet");
+
+        if (!result) {
+            toast.error("Une erreur est survenue lors de la création du projet");
             setIsLoading(false);
             return;
         }

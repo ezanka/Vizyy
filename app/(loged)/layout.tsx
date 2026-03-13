@@ -16,7 +16,6 @@ export default async function Layout({
         const pathname = headersList.get("x-pathname") || "";
         const search = headersList.get("x-search") || "";
         const callbackUrl = pathname + search;
-        toast.error("Vous devez être connecté pour accéder à cette page.")
 
         redirect(`/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`);
     }

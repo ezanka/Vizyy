@@ -7,6 +7,7 @@ import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { createTest } from "@/src/actions/create-test-actions";
 import { TestEnvironment, TestStatus, TestType } from "@/src/generated/prisma/enums"
+import { toast } from "sonner";
 
 export default function CreateTestButton({ projectId, name, actions, results, type, environment, statut, update, authorized }: { projectId: string, name: string, actions: string, results: string, type: TestType, environment: TestEnvironment, statut: TestStatus, update?: Update, authorized: boolean }) {
 
@@ -15,31 +16,31 @@ export default function CreateTestButton({ projectId, name, actions, results, ty
     const handleCreateTest = () => {
         setIsLoading(true);
         if (!authorized) {
-            alert("Vous n'êtes pas autorisé à créer un test");
+            toast.error("Vous n'êtes pas autorisé à créer un test");
             setIsLoading(false);
             return;
         }
 
         if (!update) {
-            alert("Vous devez avoir un update sélectionné pour créer un test");
+            toast.error("Vous devez avoir un update sélectionné pour créer un test");
             setIsLoading(false);
             return;
         }
 
         if (!name) {
-            alert("Vous devez avoir un nom de test pour créer un test");
+            toast.error("Vous devez avoir un nom de test pour créer un test");
             setIsLoading(false);
             return;
         }
 
         if (!actions) {
-            alert("Vous devez avoir des actions pour créer un test");
+            toast.error("Vous devez avoir des actions pour créer un test");
             setIsLoading(false);
             return;
         }
 
         if (!results) {
-            alert("Vous devez avoir des résultats pour créer un test");
+            toast.error("Vous devez avoir des résultats pour créer un test");
             setIsLoading(false);
             return;
         }
@@ -47,7 +48,7 @@ export default function CreateTestButton({ projectId, name, actions, results, ty
         const result = createTest(projectId, name, actions, results, type, statut, environment, update);
 
         if (!result) {
-            alert("Une erreur est survenue lors de la création du test");
+            toast.error("Une erreur est survenue lors de la création du test");
             setIsLoading(false);
             return;
         }

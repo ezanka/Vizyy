@@ -7,6 +7,7 @@ import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { updateTest } from "@/src/actions/update-test-actions";
 import { TestEnvironment, TestStatus, TestType } from "@/src/generated/prisma/enums"
+import { toast } from "sonner";
 
 export default function UpdateTestButton({ projectId, name, type, statut, actions, results, environment, update, authorized, test }: { projectId: string, name: string, type: TestType, statut: TestStatus, actions: string, results: string, environment: TestEnvironment, update?: Update, authorized: boolean, test: { id: string } }) {
 
@@ -15,20 +16,20 @@ export default function UpdateTestButton({ projectId, name, type, statut, action
     const handleUpdateTest = () => {
         setIsLoading(true);
         if (!authorized) {
-            alert("Vous n'êtes pas autorisé à mettre à jour un test");
+            toast.error("Vous n'êtes pas autorisé à mettre à jour un test");
             setIsLoading(false);
             return;
         }
 
         if (!update) {
-            alert("Vous devez avoir un update sélectionné pour mettre à jour un test");
+            toast.error("Vous devez avoir un update sélectionné pour mettre à jour un test");
             setIsLoading(false);
             return;
         }
         const result = updateTest(projectId, test.id, name, type, statut, actions, results, environment, update);
 
         if (!result) {
-            alert("Une erreur est survenue lors de la mise à jour du test");
+            toast.error("Une erreur est survenue lors de la mise à jour du test");
             setIsLoading(false);
             return;
         }

@@ -6,6 +6,7 @@ import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { deleteTodo } from "@/src/actions/delete-todo-actions";
 import { Trash } from "lucide-react";
+import { toast } from "sonner";
 
 export default function DeleteTodoButton({ projectId, todoId, authorized }: { projectId: string, todoId: string, authorized: boolean }) {
 
@@ -14,7 +15,7 @@ export default function DeleteTodoButton({ projectId, todoId, authorized }: { pr
     const handleDeleteTodo = async () => {
         setIsLoading(true);
         if (!authorized) {
-            alert("Vous n'êtes pas autorisé à supprimer un todo");
+            toast.error("Vous n'êtes pas autorisé à supprimer un todo");
             setIsLoading(false);
             return;
         }
@@ -22,7 +23,7 @@ export default function DeleteTodoButton({ projectId, todoId, authorized }: { pr
         const result = deleteTodo(projectId, todoId);
 
         if (!result) {
-            alert("Une erreur est survenue lors de la suppression du todo");
+            toast.error("Une erreur est survenue lors de la suppression du todo");
             setIsLoading(false);
             return;
         }

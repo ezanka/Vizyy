@@ -6,6 +6,7 @@ import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { deleteTest } from "@/src/actions/delete-test-actions";
 import { Trash } from "lucide-react";
+import { toast } from "sonner";
 
 export default function DeleteTestButton({ projectId, authorized, test }: { projectId: string, authorized: boolean, test: { id: string } }) {
 
@@ -14,7 +15,7 @@ export default function DeleteTestButton({ projectId, authorized, test }: { proj
     const handleDeleteTest = () => {
         setIsLoading(true);
         if (!authorized) {
-            alert("Vous n'êtes pas autorisé à supprimer un test");
+            toast.error("Vous n'êtes pas autorisé à supprimer un test");
             setIsLoading(false);
             return;
         }
@@ -22,7 +23,7 @@ export default function DeleteTestButton({ projectId, authorized, test }: { proj
         const result = deleteTest(projectId, test.id);
 
         if (!result) {
-            alert("Une erreur est survenue lors de la suppression du test");
+            toast.error("Une erreur est survenue lors de la suppression du test");
             setIsLoading(false);
             return;
         }

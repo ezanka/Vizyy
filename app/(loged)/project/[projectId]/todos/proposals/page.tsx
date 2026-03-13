@@ -1,5 +1,4 @@
 import { isMaker } from "@/src/actions/is-maker-actions";
-import TodosTable from "@/src/components/todos/table";
 import { prisma } from "@/src/lib/prisma";
 
 type Params = {

@@ -6,6 +6,7 @@ import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { deleteUpdate } from "@/src/actions/delete-update-actions";
 import { Trash } from "lucide-react";
+import { toast } from "sonner";
 
 export default function DeleteUpdateButton({ projectId, updateId, authorized }: { projectId: string, updateId: string, authorized: boolean }) {
 
@@ -17,7 +18,7 @@ export default function DeleteUpdateButton({ projectId, updateId, authorized }: 
         const result = deleteUpdate(projectId, updateId);
 
         if (!result) {
-            alert("Une erreur est survenue lors de la suppression de l'update");
+            toast.error("Une erreur est survenue lors de la suppression de l'update");
             setIsLoading(false);
             return;
         }

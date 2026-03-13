@@ -35,6 +35,19 @@ export default async function DashboardPage({
 
     const authorized = (await isMaker(projectId)).isMaker;
 
+    const clientMembers = projectInfo?.members.filter(
+        (m) => m.role === MemberRole.CLIENT
+    ) ?? [];
+
+    const clientsWithInfo = await Promise.all(
+        clientMembers.map(async (member) => {
+            const memberInfo = await prisma.user.findUnique({
+                where: { id: member.userId },
+            });
+            return { member, memberInfo };
+        })
+    );
+
     return (
         <div className="flex flex-col gap-4 my-4">
             <div className="flex items-center justify-between mb-4">
@@ -88,7 +101,7 @@ export default async function DashboardPage({
                     </CardHeader>
                     <CardContent>
                         <p className="text-[1.8rem] font-black tracking-[-0.03em] leading-none">{projectInfo?.deadline ? format(new Date(projectInfo?.deadline || ""), "d MMM") : "Pas de date limite"}</p>
-                        {projectInfo?.deadline  && ( <p className="text-[11.5px] text-foreground-subtle mt-2 flex items-center gap-2">
+                        {projectInfo?.deadline && (<p className="text-[11.5px] text-foreground-subtle mt-2 flex items-center gap-2">
                             {differenceInDays(new Date(projectInfo?.deadline || ""), new Date()) > 7 ? (
                                 <>
                                     {differenceInDays(new Date(projectInfo?.deadline || ""), new Date())} jours restants
@@ -136,34 +149,26 @@ export default async function DashboardPage({
                     </Link>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                    {
-                        projectInfo?.members.map(async (member) => {
-                            if (member.role !== MemberRole.CLIENT) return null;
-
-                            const memberInfo = await prisma.user.findUnique({
-                                where: {
-                                    id: member.userId,
-                                },
-                            });
-
-                            return (
-                                <Card key={member.id} className="flex items-center gap-3.5 px-4.5 py-3.25 rounded-xl border cursor-default hover:brightness-110 transition-all">
-                                    <CardContent className="px-2 flex items-center gap-4 justify-between w-full">
-                                        <div className="flex-1 flex items-center gap-3.5 px-2 py-1">
-                                            <div className="size-8 rounded-lg grid place-items-center text-[13px] shrink-0 text-foreground bg-popover">{memberInfo?.name.split(" ").map(n => n[0]).join("")}</div>
-                                            <div className="flex-1">
-                                                <span className="text-[12.5px] font-bold block text-foreground">{memberInfo?.name}</span>
-                                                <span className="text-[11px] text-foreground-subtle">{memberInfo?.company ? memberInfo.company : "Entreprise inconnue"}</span>
-                                            </div>
-                                        </div>
-                                        <Button variant="secondary" size={"sm"}>
-                                            <Link href={`mailto:${memberInfo?.email}`}>Contacter</Link>
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            )
-                        })
-                    }
+                    {clientsWithInfo.map(({ member, memberInfo }) => (
+                        <Card key={member.id} className="flex items-center gap-3.5 px-4.5 py-3.25 rounded-xl border cursor-default hover:brightness-110 transition-all">
+                            <CardContent className="px-2 flex items-center gap-4 justify-between w-full">
+                                <div className="flex-1 flex items-center gap-3.5 px-2 py-1">
+                                    <div className="size-8 rounded-lg grid place-items-center text-[13px] shrink-0 text-foreground bg-popover">
+                                        {memberInfo?.name.split(" ").map(n => n[0]).join("")}
+                                    </div>
+                                    <div className="flex-1">
+                                        <span className="text-[12.5px] font-bold block text-foreground">{memberInfo?.name}</span>
+                                        <span className="text-[11px] text-foreground-subtle">
+                                            {memberInfo?.company ?? "Entreprise inconnue"}
+                                        </span>
+                                    </div>
+                                </div>
+                                <Button variant="secondary" size="sm">
+                                    <Link href={`mailto:${memberInfo?.email}`}>Contacter</Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ))}
                 </div>
             </div>
             <div className="flex flex-col gap-4">

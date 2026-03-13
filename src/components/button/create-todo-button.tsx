@@ -7,6 +7,7 @@ import { Spinner } from "../ui/shadcn/spinner";
 import React from "react";
 import { TodoType, TodoStatus, TodoPriority } from "@/src/generated/prisma/enums"
 import { createTodo } from "@/src/actions/create-todo-actions";
+import { toast } from "sonner";
 
 export default function CreateTodoButton({ projectId, title, description, type, status, priority, assignedTo, update, authorized }: { projectId: string, title: string, description: string, type: TodoType, status: TodoStatus, priority: TodoPriority, assignedTo?: User, update?: Update, authorized: boolean }) {
 
@@ -15,19 +16,19 @@ export default function CreateTodoButton({ projectId, title, description, type, 
     const handleCreateTodo = async () => {
         setIsLoading(true);
         if (!authorized) {
-            alert("Vous n'êtes pas autorisé à créer un todo");
+            toast.error("Vous n'êtes pas autorisé à créer un todo");
             setIsLoading(false);
             return;
         }
 
         if (!title) {
-            alert("Vous devez avoir un titre pour créer un todo");
+            toast.error("Vous devez avoir un titre pour créer un todo");
             setIsLoading(false);
             return;
         }
 
         if (!description) {
-            alert("Vous devez avoir une description pour créer un todo");
+            toast.error("Vous devez avoir une description pour créer un todo");
             setIsLoading(false);
             return;
         }
@@ -35,7 +36,7 @@ export default function CreateTodoButton({ projectId, title, description, type, 
         const result = createTodo(projectId, title, description, type, status, priority, assignedTo, update);
 
         if (!result) {
-            alert("Une erreur est survenue lors de la création du todo");
+            toast.error("Une erreur est survenue lors de la création du todo");
             setIsLoading(false);
             return;
         }

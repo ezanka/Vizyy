@@ -12,6 +12,19 @@ export async function createFeedback(projectId: string, feedback: string, update
         return { error: "Vous devez être connecté pour créer un feedback" };
     }
 
+    const isMember = await prisma.member.findUnique({
+        where: {
+            userId_organizationId: {
+                userId: user.id,
+                organizationId: projectId,
+            },
+        },
+    });
+
+    if (!isMember) {
+        return { error: "Vous n'avez pas les permissions pour créer un feedback" };
+    }
+
     await prisma.feedback.create({
         data: {
             id: randomUUID(),
